@@ -18,7 +18,7 @@ USB (8 bit and 16 bit) synchronization accuracy and repeat tests / USB（8bit �
 
 PCIe summary / PCIe 摘要:
 
-- Master − slave offset: median about −50 ms in the first period and about +19 ms in the second (the cameras were repositioned in between). / 主−从偏差：前段中位数约 −50 ms，后段约 +19 ms（期间调整过相机位置）。
+- Master − slave offset: median about −50 ms in the first period and about +26 ms in the second (the cameras were repositioned in between). / 主−从偏差：前段中位数约 −50 ms，后段约 +26 ms（期间调整过相机位置）。
 - No frame loss in the 15 formal groups (462 frames): sequence numbers continuous, files complete. / 15 个正式组共 462 帧无丢帧：序号连续、文件齐全。
 - Frame period about 540.5 ms for both cameras. / 两台相机帧周期均约 540.5 ms。
 - Single-frame Δ is limited by the 60 Hz screen clock (16.7 ms per step); use the median. / 单帧 Δ 受 60 Hz 屏幕时钟（每格 16.7 ms）限制，请以中位数为准。
