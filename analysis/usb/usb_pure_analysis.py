@@ -6,12 +6,13 @@ import numpy as np
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 plt.rcParams["font.sans-serif"]=["Microsoft YaHei","SimHei","DejaVu Sans"]; plt.rcParams["axes.unicode_minus"]=False
-R=Path("J:/Mywork/Project_LH/sync_acc_runs/20261103_usb"); PAIRS=Path("J:/Mywork/Project_LH/sync_acc_runs/20261103_pcie16_r3/reports/final_pairs_all_modes.csv")
+R=Path("J:/Mywork/Project_LH/sync_acc_runs/20261103_usb"); PAIRS=Path(__file__).resolve().parents[2]/"results"/"usb_pairs.csv"
 OUT=Path(__file__).parent; TICK=1000/60
 def gk(g): return "G1" if g.startswith("G1_") else g
 def tms(s):
     h,m,r=s.split(":"); a,b=r.split("."); return ((int(h)*60+int(m))*60+int(a))*1000+int(b)
 rows=list(csv.DictReader(open(PAIRS,encoding="utf-8-sig")))
+for x in rows: x["delta_ms(master-slave)"]=x["delta"]; x["utc_master"]=x["utc_master"]; x["utc_slave"]=x["utc_slave"]
 res={}
 def stats(d):
     a=np.array(d,float)
@@ -24,16 +25,21 @@ for bit in ("8bit","16bit"):
     for x in v: by[x["group"]].append(x)
     per={}; allpairs=0
     for g in ["G1","G2","G3","G4","G5","G6"]:
-        ds=[float(x["delta_ms(master-slave)"]) for k,xs in by.items() if gk(k)==g for x in xs]
+        xs_all=[x for k,xs in by.items() if gk(k)==g for x in xs]
+        flags=collections.Counter(("est" if "est" in (x["master"],x["slave"]) else x["master"]) for x in xs_all)
+        use=[x for x in xs_all if x["master"] not in ("unres","cond")]
+        ds=[float(x["delta_ms(master-slave)"]) for x in use]
         allpairs+=len(ds); nm=[d for d in ds if abs(d)<=100]
         cap={"G1":10,"G2":10,"G3":100,"G4":1,"G5":10,"G6":100}[g]
-        per[g]=dict(captured=cap,read=len(ds),valid=len(nm),excluded=len(ds)-len(nm),stats=stats(nm) if nm else None,normal=nm)
+        per[g]=dict(captured=cap,read=len(xs_all),usable=len(ds),valid=len(nm),excluded=len(ds)-len(nm),
+                    obs=flags.get("obs",0),est=flags.get("est",0),man=flags.get("man",0),unres=flags.get("unres",0),cond=flags.get("cond",0),
+                    stats=stats(nm) if nm else None,normal=nm)
     full=sum((per[g]["normal"] for g in ("G1","G2","G3")),[]); b3=sum((per[g]["normal"] for g in ("G4","G5","G6")),[])
     tot=full+b3
     hist={"full":dict(sorted(collections.Counter(int(round(x/TICK)) for x in full).items())),"bin3":dict(sorted(collections.Counter(int(round(x/TICK)) for x in b3).items()))}
     drift={}
     for g in ("G3","G6"):
-        pts=sorted((int(x["seq"]),float(x["delta_ms(master-slave)"])) for k,xs in by.items() if gk(k)==g for x in xs if abs(float(x["delta_ms(master-slave)"]))<=100)
+        pts=sorted((int(x["seq"]),float(x["delta_ms(master-slave)"])) for k,xs in by.items() if gk(k)==g for x in xs if x["master"] not in ("unres","cond") and abs(float(x["delta_ms(master-slave)"]))<=100)
         xs_=np.array([a for a,b in pts],float); ys_=np.array([b for a,b in pts],float)
         A=np.polyfit(xs_,ys_,1); drift[g]=dict(n=len(pts),slope=float(A[0]),total_100=float(A[0]*100))
     # frame-loss checks
@@ -56,7 +62,7 @@ for bit in ("8bit","16bit"):
     # cadence from pairs
     cad={}
     for g in ("G2","G3","G5","G6"):
-        vv=sorted([x for k,xs in by.items() if gk(k)==g for x in xs],key=lambda x:int(x["seq"]))
+        vv=sorted([x for k,xs in by.items() if gk(k)==g for x in xs if x["master"]=="obs" and x["slave"]=="obs"],key=lambda x:int(x["seq"]))
         iv={}
         for cam,k in (("M","utc_master"),("S","utc_slave")):
             a=[tms(b[k])-tms(c[k]) for c,b in zip(vv,vv[1:]) if int(b["seq"])-int(c["seq"])==1]

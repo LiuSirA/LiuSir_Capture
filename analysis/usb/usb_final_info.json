@@ -1,0 +1,240 @@
+{
+ "8bit|G1_01": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_02": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_03": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_04": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_05": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_06": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_07": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_08": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_09": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G1_10": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G2": {
+  "frames": 10,
+  "lines": {
+   "M": {
+    "period": 417.4,
+    "inliers": 10,
+    "n": 10
+   },
+   "S": {
+    "period": 417.4,
+    "inliers": 10,
+    "n": 10
+   }
+  },
+  "n_est": 0
+ },
+ "8bit|G3": {
+  "frames": 100,
+  "lines": {
+   "M": {
+    "period": 416.47,
+    "inliers": 98,
+    "n": 100
+   },
+   "S": {
+    "period": 416.6,
+    "inliers": 99,
+    "n": 100
+   }
+  },
+  "n_est": 3
+ },
+ "8bit|G4": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "8bit|G5": {
+  "frames": 10,
+  "lines": {
+   "M": {
+    "period": 303.36,
+    "inliers": 8,
+    "n": 10
+   },
+   "S": {
+    "period": 303.36,
+    "inliers": 10,
+    "n": 10
+   }
+  },
+  "n_est": 2
+ },
+ "8bit|G6": {
+  "frames": 100,
+  "lines": {
+   "M": {
+    "period": 303.91,
+    "inliers": 98,
+    "n": 99
+   },
+   "S": {
+    "period": 303.9,
+    "inliers": 97,
+    "n": 99
+   }
+  },
+  "n_est": 5
+ },
+ "16bit|G1_01": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_02": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_03": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_04": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_05": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_06": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_07": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_08": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_09": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G1_10": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G2": {
+  "frames": 10,
+  "lines": {
+   "M": {
+    "period": 800.15,
+    "inliers": 10,
+    "n": 10
+   },
+   "S": {
+    "period": 800.15,
+    "inliers": 10,
+    "n": 10
+   }
+  },
+  "n_est": 0
+ },
+ "16bit|G3": {
+  "frames": 100,
+  "lines": {
+   "M": {
+    "period": 800.21,
+    "inliers": 83,
+    "n": 92
+   },
+   "S": {
+    "period": 800.16,
+    "inliers": 92,
+    "n": 92
+   }
+  },
+  "n_est": 25
+ },
+ "16bit|G4": {
+  "frames": 1,
+  "lines": {},
+  "n_est": 0
+ },
+ "16bit|G5": {
+  "frames": 10,
+  "lines": {
+   "M": {
+    "period": 619.63,
+    "inliers": 10,
+    "n": 10
+   },
+   "S": {
+    "period": 619.63,
+    "inliers": 9,
+    "n": 10
+   }
+  },
+  "n_est": 1
+ },
+ "16bit|G6": {
+  "frames": 100,
+  "lines": {
+   "M": {
+    "period": 619.98,
+    "inliers": 100,
+    "n": 100
+   },
+   "S": {
+    "period": 620.11,
+    "inliers": 100,
+    "n": 100
+   }
+  },
+  "n_est": 0
+ }
+}
