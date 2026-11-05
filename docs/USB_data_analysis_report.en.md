@@ -199,7 +199,7 @@ The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. 
 
 **(5) Pairs not used in the statistics.**
 - 16 bit G1_01 was re-captured at 14:30 after the camera position had changed, and its picture composition differs from the rest of the data. The readings in the image are master 14:31:24.142 and slave 14:31:24.157, Δ −15 ms; they are kept as a record only and are not pooled into the 16 bit full-frame statistics.
-- 16 bit G4 (recognition .309 / .400, Δ −91): the original image shows severe ghosting in the milliseconds digits, and neither reading can be decided, so it is not used.
+- 16 bit G4 (recognition .309 / .400, Δ −91): the milliseconds of both cameras have a second overlapping layer, at a digit rollover. The clearer layer reads .309 for the master and .442 for the slave (the slave was also checked manually and is at a rollover), Δ −133 ms, which does not fit the other data of the same kind (Δ between −47 and −65 ms for 16 bit bin 3); ghosting is suspected, neither reading can be decided, and the pair is not used.
 
 **(6) Limitation of the readings.** The recognition readings of the 100-frame groups were not checked one by one against the images. Estimated frames and readings from the image are marked in the result table, and the statistics are given both for all valid frames and for the frames read by recognition only (Section 3.1).
 
