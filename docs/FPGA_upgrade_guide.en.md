@@ -1,5 +1,7 @@
 # QHY600M Pro ERIS FPGA Upgrade Guide (sub2 = 0x12)
 
+> **Closed-loop tested:** the firmware upgrade (files and tool of this release) and the capture test demo were tested on two QHY600M Pro ERIS cameras over USB. See section 8.
+
 This guide describes the FPGA user image and the upgrade tool published in the GitHub Release `qhy600-fpga-0x12-20261012`.
 
 ## 1. What is released
@@ -99,3 +101,10 @@ The files of this release were used to upgrade two QHY600M Pro ERIS cameras (mas
 | USB master/slave synchronized capture (16 bit, full frame and bin 3×3, 10 frames each) | Before the upgrade, after camera 1 and after camera 2: master and slave each 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
 
 The image written is the same version as the one the cameras were already running (0x12), so the version numbers do not change; the test shows that the files and the tool write a working image and that capture and synchronization still work afterwards. The PCIe path was not part of this test.
+
+The test demo of the repository was also run on the upgraded cameras, from a fresh clone of the repository (commit 0b9a06e):
+
+| Demo | Result |
+|---|---|
+| `sync_acc_run.py`, USB master/slave, 16 bit, full frame and bin 3×3, 10 frames each | Master and slave 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
+| `e2e_test.py` (capture GUI with real cameras: scan, connect, live, sync hold and release, exit and re-enter) | 20 of 22 checks pass; the 2 failing checks compare the GUI default of the burst-start register (1) with the preset file (0), a known difference in defaults |
