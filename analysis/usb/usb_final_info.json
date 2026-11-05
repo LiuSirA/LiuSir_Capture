@@ -69,17 +69,17 @@
   "frames": 100,
   "lines": {
    "M": {
-    "period": 416.47,
-    "inliers": 98,
-    "n": 100
+    "period": 416.54,
+    "inliers": 97,
+    "n": 99
    },
    "S": {
-    "period": 416.6,
-    "inliers": 99,
-    "n": 100
+    "period": 416.61,
+    "inliers": 98,
+    "n": 99
    }
   },
-  "n_est": 3
+  "n_est": 5
  },
  "8bit|G4": {
   "frames": 1,
@@ -106,12 +106,12 @@
   "frames": 100,
   "lines": {
    "M": {
-    "period": 303.91,
+    "period": 303.95,
     "inliers": 98,
     "n": 99
    },
    "S": {
-    "period": 303.9,
+    "period": 303.95,
     "inliers": 97,
     "n": 99
    }
@@ -225,12 +225,12 @@
   "frames": 100,
   "lines": {
    "M": {
-    "period": 619.98,
+    "period": 620.01,
     "inliers": 100,
     "n": 100
    },
    "S": {
-    "period": 620.11,
+    "period": 620.07,
     "inliers": 100,
     "n": 100
    }

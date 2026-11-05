@@ -1,7 +1,7 @@
 # USB Synchronized Capture Accuracy Test: Data Analysis (Error and Frame Loss)
 
 > Scope: formal data set `20261103_usb` (15 groups each for 8 bit and 16 bit), plus the USB repeat tests of 11/04 (power cycling and cooling on/off, 7 groups). Master ac14 (shown as a7c0 under another SDK build), slave 8765 (shown as 847c).
-> Reading method: the clock region of each camera is tilt-corrected and recognized (OCR), merged with the earlier recognition results and repaired with the time line of neighbouring frames. In the groups of 100 and 10 frames, a frame that is still more than 40 ms away from the time line, or has no reading, gets an estimate from that camera's own time line (marked `est`). Single-frame groups (G1, G4) have no time line; their clocks were read from the original images (marked `man`), and those that could not be decided are left out of the statistics. The statistics use frame pairs whose master − slave delta (Δ) is within ±100 ms. The reading method and the corrections are described in Section 3.5.
+> Reading method: the clock region of each camera is tilt-corrected and recognized (OCR), merged with the earlier recognition results and repaired with the time line of neighbouring frames. For the 100-frame groups the readings were checked against the original images on a sample, and those with a large deviation were corrected from the image (marked `chk`). In the groups of 100 and 10 frames, a frame that is still more than 40 ms away from the time line, or has no reading, gets an estimate from that camera's own time line (marked `est`). Single-frame groups (G1, G4) have no time line; their clocks were read from the original images (marked `man`), and those that could not be decided are left out of the statistics. The statistics use frame pairs whose master − slave delta (Δ) is within ±100 ms. The reading method and the corrections are described in Section 3.5.
 > Scripts: `usb_pure_analysis.py`, `usb_final_pairs.py`. Results: `usb_pure_results.json`, `usb_final_pairs.csv`. Figures: `fig_usb_8bit_hist.png`, `fig_usb_16bit_hist.png`.
 
 ## 1. Test Conditions and Groups
@@ -59,13 +59,14 @@
 
 ## 2. Data Overview
 
-"Captured" is the number of master/slave pairs actually saved. The reading of each pair comes from recognition (obs), reading from the image (man) or a time-line estimate (est); some pairs are not used in the statistics.
+"Captured" is the number of master/slave pairs actually saved. The reading of each pair comes from recognition (obs), a recognition reading corrected after checking the original image (chk), reading from the image (man) or a time-line estimate (est); some pairs are not used in the statistics.
 
 | Item | 8 bit | 16 bit |
 |---|---|---|
 | Formal groups | 15 | 15 |
 | Captured pairs | 231 | 231 |
-| Read by recognition (both cameras) | 216 | 202 |
+| Read by recognition (both cameras) | 196 | 197 |
+| Corrected after checking the original image (100-frame groups) | 19 | 5 |
 | Read from the image (single-frame groups) | 6 | 10 |
 | Time-line estimate (at least one camera) | 9 | 18 |
 | Not used in the statistics | 0 | 1 |
@@ -73,19 +74,19 @@
 
 ### Source of the readings per group
 
-| Group | Captured | 8 bit obs | 8 bit man | 8 bit est | 8 bit used | 16 bit obs | 16 bit man | 16 bit est | 16 bit not used | 16 bit used |
-|---|---|---|---|---|---|---|---|---|---|---|
-| G1 (10 single-frame groups) | 10 | 5 | 5 | 0 | 10 | 0 | 9 | 0 | 1 | 9 |
-| G2 | 10 | 10 | 0 | 0 | 10 | 10 | 0 | 0 | 0 | 10 |
-| G3 | 100 | 97 | 0 | 3 | 100 | 83 | 0 | 17 | 0 | 100 |
-| G4 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 1 |
-| G5 | 10 | 8 | 0 | 2 | 10 | 9 | 0 | 1 | 0 | 10 |
-| G6 | 100 | 96 | 0 | 4 | 100 | 100 | 0 | 0 | 0 | 100 |
-| Total | 231 | 216 | 6 | 9 | 231 | 202 | 10 | 18 | 1 | 230 |
+| Group | Captured | 8 bit obs | 8 bit chk | 8 bit man | 8 bit est | 8 bit used | 16 bit obs | 16 bit chk | 16 bit man | 16 bit est | 16 bit not used | 16 bit used |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| G1 (10 single-frame groups) | 10 | 5 | 0 | 5 | 0 | 10 | 0 | 0 | 9 | 0 | 1 | 9 |
+| G2 | 10 | 10 | 0 | 0 | 0 | 10 | 10 | 0 | 0 | 0 | 0 | 10 |
+| G3 | 100 | 92 | 4 | 0 | 4 | 100 | 83 | 0 | 0 | 17 | 0 | 100 |
+| G4 | 1 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 |
+| G5 | 10 | 8 | 0 | 0 | 2 | 10 | 9 | 0 | 0 | 1 | 0 | 10 |
+| G6 | 100 | 81 | 15 | 0 | 4 | 100 | 95 | 5 | 0 | 0 | 0 | 100 |
+| Total | 231 | 196 | 19 | 6 | 10 | 231 | 197 | 5 | 10 | 18 | 1 | 230 |
 
 - All captured frames are present and no frames were lost (Section 4).
 - The 1 pair of 16 bit that is not used: G1_01 (re-captured, different conditions).
-- The share of estimated frames is small (9 of 231 for 8 bit, 18 of 231 for 16 bit) but concentrated in 16 bit G3 (17 pairs); the reason is given in Section 3.5. Using only the pairs read by recognition changes the medians by no more than 1 ms (Section 3.1), so the estimates do not change the conclusions.
+- The share of estimated frames is small (10 of 231 for 8 bit, 18 of 231 for 16 bit) but concentrated in 16 bit G3 (17 pairs); the reason is given in Section 3.5. Pairs corrected after checking the original image: 19 in 8 bit and 5 in 16 bit (Section 3.5). Using only the pairs read by recognition changes the medians by no more than 1 ms (Section 3.1), so the estimates do not change the conclusions.
 
 ## 3. Error Analysis
 
@@ -99,12 +100,12 @@
 |---|---|---|---|---|---|---|---|---|
 | G1 | 10 | 10 | −50.0 | −50.0 | 0.0 | 0.0 | −50 to −50 | −50 to −50 |
 | G2 | 10 | 10 | −53.5 | −56.2 | 12.5 | 5.9 | −76 to −42 | −83 to −35 |
-| G3 | 100 | 100 | −50.0 | −51.8 | 7.7 | 0.0 | −70 to −43 | −82 to −36 |
+| G3 | 100 | 100 | −50.0 | −50.5 | 5.3 | 0.0 | −60 to −43 | −71 to −36 |
 | G4 | 1 | 1 | −33.0 | n/a | n/a | n/a | n/a | n/a |
 | G5 | 10 | 10 | −36.0 | −35.6 | 7.9 | 7.4 | −44 to −23 | −45 to −18 |
-| G6 | 100 | 100 | −34.0 | −37.9 | 13.2 | 3.7 | −60 to −21 | −86 to +1 |
-| **Full frame G1–G3** | 120 | 120 | **−50.0** | −52.0 | 7.9 | **0.0** | −70 to −43 | −83 to −35 |
-| **Bin 3 G4–G6** | 111 | 111 | **−34.0** | −37.6 | 12.8 | **5.9** | −57 to −20 | −86 to +1 |
+| G6 | 100 | 100 | −33.0 | −36.0 | 7.6 | 1.5 | −53 to −30 | −54 to −8 |
+| **Full frame G1–G3** | 120 | 120 | **−50.0** | −50.9 | 6.1 | **0.0** | −64 to −43 | −83 to −35 |
+| **Bin 3 G4–G6** | 111 | 111 | **−33.0** | −35.9 | 7.6 | **1.5** | −53 to −29 | −54 to −8 |
 
 **16 bit**
 
@@ -115,48 +116,48 @@
 | G3 | 100 | 100 | −64.0 | −62.0 | 5.6 | 4.4 | −68 to −50 | −76 to −49 |
 | G4 | 1 | 1 | −42.0 | n/a | n/a | n/a | n/a | n/a |
 | G5 | 10 | 10 | −52.0 | −52.9 | 4.8 | 2.2 | −61 to −48 | −65 to −47 |
-| G6 | 100 | 100 | −50.0 | −46.5 | 9.8 | 1.5 | −54 to −31 | −82 to 0 |
+| G6 | 100 | 100 | −50.0 | −47.1 | 6.3 | 1.5 | −54 to −34 | −63 to −29 |
 | **Full frame G1–G3** | 120 | 119 | **−65.0** | −62.5 | 5.7 | **4.4** | −69 to −50 | −76 to −49 |
-| **Bin 3 G4–G6** | 111 | 111 | **−50.0** | −47.1 | 9.6 | **3.0** | −55 to −32 | −82 to 0 |
+| **Bin 3 G4–G6** | 111 | 111 | **−50.0** | −47.6 | 6.3 | **1.5** | −54 to −34 | −65 to −29 |
 
-Using only the pairs read by recognition (without readings from the image and estimates) gives the following; the medians differ from the tables above by no more than 1 ms:
+Using only the pairs read by recognition (without readings from the image, corrected values and estimates) gives the following; the medians differ from the tables above by no more than 1 ms:
 
 | Mode · resolution | Pairs | Median | Robust σ | Std. dev. |
 |---|---|---|---|---|
-| 8 bit full frame | 112 | −50.0 | 0.0 | 8.1 |
-| 8 bit bin 3 | 104 | −34.0 | 2.2 | 13.2 |
+| 8 bit full frame | 107 | −50.0 | 0.0 | 6.3 |
+| 8 bit bin 3 | 89 | −34.0 | 1.5 | 8.2 |
 | 16 bit full frame | 93 | −66.0 | 1.5 | 5.8 |
-| 16 bit bin 3 | 109 | −50.0 | 3.0 | 9.7 |
+| 16 bit bin 3 | 104 | −50.0 | 1.5 | 6.4 |
 
 Key points:
-- 8 bit: the full-frame median is −50 ms (−3 refresh periods) and the bin 3 median is −34 ms (−2 periods).
+- 8 bit: the full-frame median is −50 ms (−3 refresh periods) and the bin 3 median is −33 ms (−2 periods).
 - 16 bit: the full-frame median is −65 ms (−4 periods) and the bin 3 median is −50 ms (−3 periods).
 - At the same resolution 16 bit is about one refresh period (about 15 to 16 ms) larger than 8 bit. A difference of one period is close to the resolution of the screen method, but 8 bit and 16 bit full frame each have more than 100 pairs and a robust σ below 5 ms, so the difference does not look like reading noise.
 - G1, G2, G4 and G5 have very few samples (1 to 10 pairs) and are for reference only. The conclusions rest mainly on the two 100-frame groups, G3 and G6.
-- Compared with the earlier version of the recognition, the standard deviations are clearly smaller after the correction (for example 16 bit G3 dropped from 17.0 to 5.6), so the large spread before was mainly reading error; the medians hardly changed.
+- Compared with the earlier version of the recognition, the standard deviations are clearly smaller after the correction (for example 16 bit G3 dropped from 17.0 to 5.6 and 8 bit G6 from 24.3 to 7.6), so the large spread before was mainly reading error; the medians hardly changed.
 
 ### 3.2 In refresh periods (figures `fig_usb_8bit_hist.png`, `fig_usb_16bit_hist.png`)
 
 | Periods | −5 | −4 | −3 | −2 | −1 | 0 |
 |---|---|---|---|---|---|---|
-| 8 bit full frame (120) | 4 | 12 | **98** | 6 | n/a | n/a |
-| 8 bit bin 3 (111) | 1 | 5 | 26 | **71** | 5 | 3 |
+| 8 bit full frame (120) | 1 | 10 | **103** | 6 | n/a | n/a |
+| 8 bit bin 3 (111) | n/a | n/a | 24 | **84** | 2 | 1 |
 | 16 bit full frame (119) | 1 | **97** | 21 | n/a | n/a | n/a |
-| 16 bit bin 3 (111) | 2 | 2 | **89** | 16 | 1 | 1 |
+| 16 bit bin 3 (111) | n/a | 2 | **94** | 15 | n/a | n/a |
 
-- Each row has one clear mode: 98 of 120 (82%) at −3 for 8 bit full frame, 71 of 111 (64%) at −2 for 8 bit bin 3, 97 of 119 (82%) at −4 for 16 bit full frame, and 89 of 111 (80%) at −3 for 16 bit bin 3.
+- Each row has one clear mode: 103 of 120 (86%) at −3 for 8 bit full frame, 84 of 111 (76%) at −2 for 8 bit bin 3, 97 of 119 (82%) at −4 for 16 bit full frame, and 94 of 111 (85%) at −3 for 16 bit bin 3.
 - A single-frame Δ therefore falls almost entirely on integer multiples of 1 to 4 periods; the quantization is obvious. The true synchronization offset is better expressed as the median.
 
 ### 3.3 Drift within a group
 
 | Mode · group | Pairs | Slope | Total over 100 frames |
 |---|---|---|---|
-| 8 bit G3 | 100 | −0.126 ms/frame | −12.6 ms |
-| 8 bit G6 | 100 | +0.010 ms/frame | +1.0 ms |
+| 8 bit G3 | 100 | −0.068 ms/frame | −6.8 ms |
+| 8 bit G6 | 100 | −0.009 ms/frame | −0.9 ms |
 | 16 bit G3 | 100 | +0.052 ms/frame | +5.2 ms |
-| 16 bit G6 | 100 | −0.128 ms/frame | −12.8 ms |
+| 16 bit G6 | 100 | −0.058 ms/frame | −5.8 ms |
 
-The accumulated drift over 100 frames lies between −13 and +5 ms, below one refresh period (16.7 ms), with both signs and no common trend. There is therefore no noticeable relative drift between master and slave within one burst. The figures include estimated frames; an estimate comes from each camera's own time line and has little effect on the slope.
+The accumulated drift over 100 frames lies between −7 and +5 ms, below one refresh period (16.7 ms), with both signs and no common trend. There is therefore no noticeable relative drift between master and slave within one burst. The figures include estimated frames; an estimate comes from each camera's own time line and has little effect on the slope.
 
 ### 3.4 Error sources (approximate breakdown)
 
@@ -165,7 +166,7 @@ The accumulated drift over 100 frames lies between −13 and +5 ms, below one re
 3. **Reading errors:** some may remain after the automatic correction, and the readings taken from the image of single-frame groups are also limited by ghosting.
 4. **Camera and trigger jitter:** this cannot be separated out by the screen method; its upper bound is the total spread after the items above are combined.
 
-The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit), so the cameras' own jitter is no larger than one refresh period; for bin 3 it is 5.9 and 3.0 ms.
+The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit), so the cameras' own jitter is no larger than one refresh period; for bin 3 it is 1.5 and 1.5 ms.
 
 ### 3.5 Reading method and corrections
 
@@ -173,7 +174,7 @@ The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit),
 
 **(2) Why 16 bit G3 is hard to read around sequence 42 to 58.** The frame period of this group is about 800.2 ms, roughly 8 times 100 ms, so the position of each frame relative to the hundreds-of-milliseconds rollover moves by only about 0.2 ms per frame. The master was about 10 ms before the rollover at sequence 2, exactly at the rollover at sequence 49 (11:34:29.40) and 2 ms past it at sequence 60. In this stretch the master exposure always falls a few milliseconds around the rollover, and the old and new digits overlap on the screen (for example a 3 and a 4 in the hundreds digit, a 0 and a 9 in the tens digit). The automatic recognition read sequence 49 as `11:34:29.308`, giving Δ = −151 ms; on the master's time line this frame is at about 11:34:29.400, Δ ≈ −64 ms, in line with the group median. 8 bit bin 3 has a frame period of about 303 ms and shows a similar effect, but the position moves by 3.5 ms per frame, so fewer frames are affected.
 
-**(3) Time-line estimates.** For groups of 10 frames or more, a straight line of time against sequence number is fitted for each camera (in the short groups both cameras share one frame period). A reading that is more than 40 ms from the line, or missing, is replaced by the value on the line and marked `est` in the `master` and `slave` columns of `usb_final_pairs.csv`. In 27 pairs at least one camera has an estimated value: 3 pairs in 8 bit G3, 2 in G5, 4 in G6, 17 in 16 bit G3 (sequence 50 to 86) and 1 in G5. The accuracy of an estimate is about ±8 ms (limited by the screen resolution).
+**(3) Time-line estimates.** For groups of 10 frames or more, a straight line of time against sequence number is fitted for each camera (in the short groups both cameras share one frame period). A reading that is more than 40 ms from the line, or missing, is replaced by the value on the line and marked `est` in the `master` and `slave` columns of `usb_final_pairs.csv`. In 28 pairs at least one camera has an estimated value: 4 pairs in 8 bit G3 (including sequence 98, whose readings could not be decided for either camera), 2 in G5, 4 in G6, 17 in 16 bit G3 (sequence 50 to 86) and 1 in G5. The accuracy of an estimate is about ±8 ms (limited by the screen resolution).
 
 **(4) Readings from the image for single-frame groups.** G1 (10 single-frame groups) and G4 have no time line; their clock regions were read one by one from the original images and marked `man`. The table lists the 16 pairs whose reading changed (where digits overlap, the clearer layer was read; the uncertainty is about 1 to 2 periods):
 
@@ -201,7 +202,9 @@ The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. 
 **(5) Pairs not used in the statistics.**
 - 16 bit G1_01 was re-captured at 14:30 after the camera position had changed, and its picture composition differs from the rest of the data. The readings in the image are master 14:31:24.142 and slave 14:31:24.157, Δ −15 ms; they are kept as a record only and are not pooled into the 16 bit full-frame statistics.
 
-**(6) Limitation of the readings.** The recognition readings of the 100-frame groups were not checked one by one against the images. Estimated frames and readings from the image are marked in the result table, and the statistics are given both for all valid frames and for the frames read by recognition only (Section 3.1).
+**(6) Check against the original images and corrections (100-frame groups).** For the 400 pairs of G3 and G6 in 8 bit and 16 bit, the readings that were 16 ms or more away from the time line of their camera were first picked out (23 pairs); in addition 10 pairs per group were drawn at random from the rest (40 pairs). These 63 pairs were checked one by one against the clock region of the original images. Result: all 23 flagged pairs had a reading error of 17 to 40 ms, mainly milliseconds tens digits misread under ghosting (3 and 5, 2 and 4, 0 and 9), corrected from the image; of the 40 random pairs, 2 (5%) had one camera about 20 ms off, also corrected; all other readings agree with the image within ±8 ms. In total 24 pairs were corrected (19 in 8 bit, 5 in 16 bit, marked `chk` in the result table); in addition the readings of 8 bit G3 sequence 98 could not be read from the image for either camera, so the time line gives an estimate. For example, the slave of 16 bit G6 sequence 3 had been read as .259 (Δ −17), whereas the image shows .295 (Δ −53), which is used now.
+
+**(7) Limitation of the readings.** About 370 recognition-read pairs that were not part of the check were not checked one by one; estimated frames, corrected frames and readings from the image are marked in the result table, and the statistics are given both for all valid frames and for the frames read by recognition only (Section 3.1).
 
 ## 4. Frame Loss Analysis
 
@@ -218,20 +221,20 @@ The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. 
 
 ### 4.2 Cadence: frame intervals are stable
 
-- **Average period over the whole burst** (frame 2 to frame 101, 99 intervals, from the sequence-number difference): 8 bit full frame G3 master 416.4 ms, slave 416.7 ms, bin 3 G6 master 303.5 ms, slave 303.8 ms; 16 bit full frame G3 master 800.2 ms, slave 800.2 ms, bin 3 G6 master 620.1 ms, slave 620.2 ms. Master and slave agree.
+- **Average period over the whole burst** (frame 2 to frame 101, 99 intervals, from the sequence-number difference): 8 bit full frame G3 master 416.4 ms, slave 416.7 ms, bin 3 G6 master 303.9 ms, slave 303.9 ms; 16 bit full frame G3 master 800.2 ms, slave 800.2 ms, bin 3 G6 master 620.1 ms, slave 620.2 ms. Master and slave agree.
 - This average checks that the sequence counter and the screen time agree. Frame loss itself is judged by the continuous sequence numbers and complete files above.
 - **Adjacent-frame intervals** (only intervals between two frames both read by recognition; estimated frames are not used):
 
 | Mode · group · camera | Intervals | Median | Robust σ | Within ±2 periods of median | Deviating by > 200 ms |
 |---|---|---|---|---|---|
-| 8 bit G3 master | 94 | 417 ms | 1.5 | 97% | 0 |
-| 8 bit G3 slave | 94 | 417 ms | 1.5 | 100% | 0 |
-| 8 bit G6 master | 92 | 300 ms | 3.0 | 96% | 0 |
-| 8 bit G6 slave | 92 | 300 ms | 2.2 | 93% | 0 |
+| 8 bit G3 master | 86 | 417 ms | 1.5 | 100% | 0 |
+| 8 bit G3 slave | 86 | 417 ms | 1.5 | 100% | 0 |
+| 8 bit G6 master | 65 | 300 ms | 1.5 | 100% | 0 |
+| 8 bit G6 slave | 65 | 300 ms | 0.0 | 100% | 0 |
 | 16 bit G3 master | 72 | 800 ms | 0.0 | 100% | 0 |
 | 16 bit G3 slave | 72 | 800 ms | 0.0 | 100% | 0 |
-| 16 bit G6 master | 99 | 617 ms | 1.5 | 98% | 0 |
-| 16 bit G6 slave | 99 | 617 ms | 3.0 | 99% | 0 |
+| 16 bit G6 master | 89 | 617 ms | 1.5 | 100% | 0 |
+| 16 bit G6 slave | 89 | 617 ms | 3.0 | 100% | 0 |
 
 - The 10 large intervals seen in 16 bit in the earlier version (6 in G3, 4 in G6) were caused by misread seconds digits and no longer occur after the readings were corrected.
 - The median intervals of master and slave differ by 0 to 1 ms, so both cameras ran at the same cadence.
@@ -246,37 +249,40 @@ The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. 
 
 In the early morning of 11/04, seven 16 bit full-frame 100-frame groups (G3 conditions) were captured on the same set-up to answer two questions: does the offset change after each power cycle, and does switching the cooling on or off change it. Capture times of these data are stamped in machine local time (UTC−8); the on-screen clock shows UTC+8.
 
-- The camera position had been adjusted before, so the clock sits at a different position in the images. Each camera was recognized with its own fixed clock region; the rest of the repair procedure is unchanged.
+- The camera position had been adjusted before, so the clock sits at a different position in the images and its tilt differs from 11/03 (about 3° for the master, about −1° for the slave). The clock region of each camera was tilt-corrected before recognition and merged with the earlier fixed-region recognition (per frame, the candidate that fits the time lines of both cameras better is kept); the time line then gives an estimate for frames that are missing or more than 40 ms off (marked `est`). All seven groups have the same frame period, about 800.2 ms, and the time lines share this period.
+- The readings were checked against the original images on a sample: first the frames whose reading is 16 ms or more off the time line or that use an estimate were picked out, then 5 pairs per group were drawn at random, 79 pairs in total, each compared with the clock region of the original image. In 23 of them one camera was off by 17 ms or more (mainly a milliseconds tens digit misread under ghosting); these were corrected from the image (marked `chk`). Frames outside the 79 pairs were not checked one by one and may still have a few deviations of about 20 ms.
 - sess1 to sess3 were each preceded by a power cycle through a smart plug; there was no power cycle between the four coolON/coolOFF groups. All 7 groups are USB, 16 bit, 1×1, exposure 10 ms, traffic 55, with 100 frames per camera and sequence numbers 2 to 101 complete.
 
-| Round | Condition | Local time | Pairs with readings | Valid pairs | Median | Robust σ |
-|---|---|---|---|---|---|---|
-| sess1 | 1st round after power cycle, cooling off | 11/04 01:51 | 91 | 91 | +33 | 8.9 |
-| sess2 | 2nd round after power cycle, cooling off | 11/04 01:55 | 98 | 98 | +33 | 5.9 |
-| sess3 | 3rd round after power cycle, cooling off | 11/04 01:58 | 80 | 79 | +33 | 13.3 |
-| coolON1 | cooling on | 11/04 02:08 | 88 | 88 | +14 | 17.8 |
-| coolOFF2 | cooling off | 11/04 02:11 | 80 | 80 | +34.5 | 6.7 |
-| coolON3 | cooling on | 11/04 02:15 | 96 | 96 | +17 | 1.5 |
-| coolOFF4 | cooling off | 11/04 02:19 | 77 | 76 | +17 | 0.0 |
+| Round | Condition | Local time | Recognition | Corrected | Estimated | Median | Robust σ | Std. dev. |
+|---|---|---|---|---|---|---|---|---|
+| sess1 | 1st round after power cycle, cooling off | 11/04 01:51 | 94 | 1 | 5 | +27 | 10.4 | 8.1 |
+| sess2 | 2nd round after power cycle, cooling off | 11/04 01:55 | 93 | 7 | 0 | +33 | 7.4 | 14.1 |
+| sess3 | 3rd round after power cycle, cooling off | 11/04 01:58 | 94 | 3 | 3 | +33 | 1.5 | 7.3 |
+| coolON1 | cooling on | 11/04 02:08 | 97 | 3 | 0 | +11.5 | 8.2 | 10.3 |
+| coolOFF2 | cooling off | 11/04 02:11 | 96 | 3 | 1 | +32 | 2.2 | 14.8 |
+| coolON3 | cooling on | 11/04 02:15 | 100 | 0 | 0 | +18 | 3.0 | 6.1 |
+| coolOFF4 | cooling off | 11/04 02:19 | 89 | 5 | 6 | +17 | 0.0 | 6.5 |
 
-- After three consecutive power cycles the offset is +33 ms every time; it did not change.
-- With cooling on the medians are +14 and +17, with cooling off +34.5 and +17. The ranges overlap, so no stable effect of cooling on the offset can be seen; the differences are within one to two refresh periods.
-- The offset of this set is **positive** (about +14 to +35 ms), whereas the 11/03 daytime USB data is **negative** (−34 to −65 ms). The same sign change was seen in the PCIe test. The camera position was adjusted between the two tests (the re-captured frame of 16 bit G1_01 already shows a camera position different from the rest of the 11/03 data), which coincides with the sign change in time, but the mechanism has not been verified.
-- The readings of these 7 groups are still the result of the earlier recognition; the tilt-corrected recognition and the time-line estimates of Section 3 were not applied to them, so the method is not exactly the same as in Section 3.
+All 100 pairs of each group are used in the statistics (\|Δ\| ≤ 100 ms). "Recognition", "Corrected" and "Estimated" give the source of the reading of each pair (a pair with an estimated value counts as estimated). Using only the pairs read by recognition gives the same medians as in the table.
+
+- After three consecutive power cycles the offsets are +27, +33 and +33 ms; the differences are within one refresh period (16.7 ms), so no change caused by the power cycles can be seen.
+- With cooling on the medians are +11.5 and +18, with cooling off +32 and +17. The ranges overlap, so no stable effect of cooling on the offset can be seen; the differences are within one to two refresh periods.
+- The offset of this set is **positive** (about +11 to +33 ms), whereas the 11/03 daytime USB data is **negative** (−33 to −65 ms). The same sign change was seen in the PCIe test. The camera position was adjusted between the two tests (the re-captured frame of 16 bit G1_01 already shows a camera position different from the rest of the 11/03 data), which coincides with the sign change in time, but the mechanism has not been verified.
+- The frame period of these data is about 800.2 ms, like 16 bit G3 of 11/03, so the master exposure moves by only about 0.2 ms per frame relative to the hundreds-of-milliseconds rollover and many frames of a group show overlapping digits; the error of a single reading is therefore larger than in Section 3, and the median and the robust σ are more reliable.
 
 ## 6. Conclusions
 
-1. **Synchronization offset (11/03 daytime, before the camera position was adjusted):** 8 bit full frame median −50 ms, bin 3 −34 ms; 16 bit full frame −65 ms, bin 3 −50 ms. At the same resolution 16 bit is about one refresh period larger than 8 bit.
-2. **Within a burst:** drift over 100 frames is between −13 and +5 ms; there is no noticeable relative drift.
+1. **Synchronization offset (11/03 daytime, before the camera position was adjusted):** 8 bit full frame median −50 ms, bin 3 −33 ms; 16 bit full frame −65 ms, bin 3 −50 ms. At the same resolution 16 bit is about one refresh period larger than 8 bit.
+2. **Within a burst:** drift over 100 frames is between −7 and +5 ms; there is no noticeable relative drift.
 3. **Frame loss:** in the 30 formal groups (924 frames) the sequence numbers are continuous, the files are complete and there are no duplicate frames, so no frames were lost. The frame period is stable: about 417 ms (full frame) and 300 ms (bin 3) for 8 bit, about 800 ms and 617 ms for 16 bit, identical for master and slave.
-4. **Anomalous points:** the points with |Δ| > 100 ms and the large intervals seen before are reading problems: recognition failures caused by the tilted text, and overlapping digits when the exposure falls close to a hundreds-of-milliseconds rollover because the frame period is close to a multiple of 100 ms. After the readings were corrected no pair with a master–slave difference above 100 ms remains.
-5. **Repeat tests:** three power cycles left the offset unchanged, and cooling on/off has no stable effect; after the camera position was adjusted the offset is about +14 to +35 ms.
+4. **Anomalous points:** the points with |Δ| > 100 ms and the large intervals seen before are reading problems: recognition failures caused by the tilted text, and overlapping digits when the exposure falls close to a hundreds-of-milliseconds rollover because the frame period is close to a multiple of 100 ms. After the readings were corrected no pair with a master–slave difference above 100 ms remains; the readings of the 100-frame groups were also checked against the original images on a sample and corrected where they were off (Section 3.5).
+5. **Repeat tests:** after three power cycles the offsets are within one refresh period (+27, +33, +33 ms), and cooling on/off has no stable effect; after the camera position was adjusted the offset is about +11 to +33 ms.
 6. **Measurement accuracy:** the smallest step of the screen method is 16.7 ms and the reading error of a single frame is about ±1 to 2 periods. A single-frame Δ should not be treated as an exact value; the median is more reliable.
 
 ## 7. Limitations
 
 - G1, G2, G4 and G5 have very few samples and are for reference only. The readings of single-frame groups come from the images and have an uncertainty of about 1 to 2 periods where digits overlap; G1_01 of 16 bit has different conditions and is not used; in 16 bit G4 the milliseconds of both cameras are at a digit rollover, and .442 (slave) and .400 (master) are used (uncertainty about ±17 ms); the slave milliseconds of 16 bit G1_05 are only known to lie between .974 and .991, and the midpoint is used (±9 ms).
-- In 9 (8 bit) and 18 (16 bit) pairs the time of one camera is a time-line estimate (most in 16 bit G3, 17 pairs). An estimate has an accuracy of about ±8 ms and is not a measured reading; using only the pairs read by recognition changes the medians by no more than 1 ms.
-- The recognition readings of the 100-frame groups were not checked one by one against the images, so reading errors that were not found may remain.
+- In 10 (8 bit) and 18 (16 bit) pairs the time of one camera is a time-line estimate (most in 16 bit G3, 17 pairs). An estimate has an accuracy of about ±8 ms and is not a measured reading; using only the pairs read by recognition changes the medians by no more than 1 ms.
+- Of the recognition readings of the 100-frame groups only 63 pairs were checked against the original images (Section 3.5) and about 370 were not; among the 40 random pairs 2 (5%) had one camera about 20 ms off, so a few similar deviations probably remain, which should not affect the medians.
 - The 11/03 USB capture script had no cooling-off step, so the cooling state was not controlled; gain and exposure are recorded as the script defaults and were not read back each time.
-- The camera position was adjusted between the 11/03 USB data and the 11/04 repeat tests; the two periods have opposite signs and the mechanism has not been verified; the readings of the 11/04 repeat tests are from the earlier recognition.
+- The camera position was adjusted between the 11/03 USB data and the 11/04 repeat tests; the two periods have opposite signs and the mechanism has not been verified.

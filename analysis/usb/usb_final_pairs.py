@@ -53,6 +53,23 @@ def joint_lines(obs, seqs):
         b = num / den
         for cam, (qm, tm_) in means.items(): a[cam] = tm_ - b * qm
     return {cam: (a[cam], b, ok[cam]) for cam in "MS"}
+
+# Readings checked against the original images (clock crops) in the 100-frame groups: all frames flagged by a time-line residual of
+# 16 ms or more plus a random sample of 10 pairs per group. Where the recognition reading differed from the image by 17 ms or more,
+# the reading from the image is used (flag 'chk'); None = could not be read, the time line gives an estimate.
+CHK = {
+    ("16bit", "G6", 3): {"S": "11:37:49.295"}, ("16bit", "G6", 8): {"S": "11:37:52.395"}, ("16bit", "G6", 90): {"S": "11:38:43.225"},
+    ("16bit", "G6", 95): {"M": "11:38:46.276"}, ("16bit", "G6", 100): {"M": "11:38:49.376"},
+    ("8bit", "G3", 75): {"M": "11:18:43.107", "S": "11:18:43.157"}, ("8bit", "G3", 87): {"M": "11:18:48.107", "S": "11:18:48.157"},
+    ("8bit", "G3", 88): {"M": "11:18:48.524"}, ("8bit", "G3", 98): {"M": None, "S": None}, ("8bit", "G3", 99): {"M": "11:18:53.091"},
+    ("8bit", "G6", 10): {"S": "11:21:30.651"}, ("8bit", "G6", 12): {"S": "11:21:31.257"}, ("8bit", "G6", 17): {"S": "11:21:32.774"},
+    ("8bit", "G6", 20): {"M": "11:21:33.657"}, ("8bit", "G6", 23): {"M": "11:21:34.574"},
+    ("8bit", "G6", 26): {"M": "11:21:35.474", "S": "11:21:35.507"}, ("8bit", "G6", 39): {"S": "11:21:39.457"},
+    ("8bit", "G6", 51): {"M": "11:21:43.074", "S": "11:21:43.107"}, ("8bit", "G6", 64): {"M": "11:21:47.024", "S": "11:21:47.057"},
+    ("8bit", "G6", 76): {"M": "11:21:50.674"}, ("8bit", "G6", 89): {"S": "11:21:54.657"}, ("8bit", "G6", 92): {"S": "11:21:55.574"},
+    ("8bit", "G6", 93): {"S": "11:21:55.874"}, ("8bit", "G6", 98): {"M": "11:21:57.374"},
+    ("8bit", "G6", 101): {"M": "11:21:58.274", "S": "11:21:58.307"},
+}
 old = collections.defaultdict(dict)
 for x in csv.DictReader(open(OLD, encoding="utf-8-sig")):
     if x["mode"].startswith("USB"): old[(x["mode"].split()[1], x["group"])][int(x["seq"])] = (x["utc_master"], x["utc_slave"])
@@ -65,6 +82,19 @@ for bit in ("8bit", "16bit"):
         for sq in seqs:
             if sq in roi: obs[sq] = (tms(roi[sq][0]), tms(roi[sq][1]), "rot")
             elif sq in old[(bit, g)]: obs[sq] = (tms(old[(bit, g)][sq][0]), tms(old[(bit, g)][sq][1]), "old")
+        chk_sides = {}
+        for (cb, cg, sq), d in CHK.items():
+            if cb == bit and cg == g and sq in seqs:
+                cur = obs.get(sq)
+                for cam, val in d.items():
+                    ci = "MS".index(cam)
+                    if val is None:
+                        chk_sides[(sq, cam)] = None
+                        if cur is not None: obs.pop(sq, None); cur = None
+                    else:
+                        m, s_, _src = cur if cur else (None, None, "old")
+                        m, s_ = (tms(val), s_) if cam == "M" else (m, tms(val))
+                        cur = (m, s_, "chk"); obs[sq] = cur; chk_sides[(sq, cam)] = tms(val)
         lines = {}
         if 8 <= len(seqs) < 30:
             jl = joint_lines(obs, seqs)
@@ -78,7 +108,9 @@ for bit in ("8bit", "16bit"):
             res = {}
             for ci, cam in enumerate("MS"):
                 o = obs.get(sq); ln = lines.get(cam)
-                if ln is None:
+                if chk_sides.get((sq, cam)):
+                    res[cam] = (chk_sides[(sq, cam)], "chk")
+                elif ln is None:
                     res[cam] = (o[ci], "obs") if o else (None, "none")
                 else:
                     a, b, _ = ln; pred = a + b * sq

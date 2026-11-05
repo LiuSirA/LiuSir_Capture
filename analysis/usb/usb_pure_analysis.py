@@ -26,13 +26,13 @@ for bit in ("8bit","16bit"):
     per={}; allpairs=0
     for g in ["G1","G2","G3","G4","G5","G6"]:
         xs_all=[x for k,xs in by.items() if gk(k)==g for x in xs]
-        flags=collections.Counter(("est" if "est" in (x["master"],x["slave"]) else x["master"]) for x in xs_all)
+        flags=collections.Counter(("est" if "est" in (x["master"],x["slave"]) else ("chk" if "chk" in (x["master"],x["slave"]) else x["master"])) for x in xs_all)
         use=[x for x in xs_all if x["master"] not in ("unres","cond")]
         ds=[float(x["delta_ms(master-slave)"]) for x in use]
         allpairs+=len(ds); nm=[d for d in ds if abs(d)<=100]
         cap={"G1":10,"G2":10,"G3":100,"G4":1,"G5":10,"G6":100}[g]
         per[g]=dict(captured=cap,read=len(xs_all),usable=len(ds),valid=len(nm),excluded=len(ds)-len(nm),
-                    obs=flags.get("obs",0),est=flags.get("est",0),man=flags.get("man",0),unres=flags.get("unres",0),cond=flags.get("cond",0),
+                    obs=flags.get("obs",0),chk=flags.get("chk",0),est=flags.get("est",0),man=flags.get("man",0),unres=flags.get("unres",0),cond=flags.get("cond",0),
                     stats=stats(nm) if nm else None,normal=nm)
     full=sum((per[g]["normal"] for g in ("G1","G2","G3")),[]); b3=sum((per[g]["normal"] for g in ("G4","G5","G6")),[])
     tot=full+b3
