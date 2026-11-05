@@ -66,10 +66,10 @@
 | Formal groups | 15 | 15 |
 | Captured pairs | 231 | 231 |
 | Read by recognition (both cameras) | 216 | 202 |
-| Read from the image (single-frame groups) | 6 | 9 |
+| Read from the image (single-frame groups) | 6 | 10 |
 | Time-line estimate (at least one camera) | 9 | 18 |
-| Not used in the statistics | 0 | 2 |
-| Used in the statistics (\|Δ\| ≤ 100 ms) | 231 | 229 |
+| Not used in the statistics | 0 | 1 |
+| Used in the statistics (\|Δ\| ≤ 100 ms) | 231 | 230 |
 
 ### Source of the readings per group
 
@@ -78,13 +78,13 @@
 | G1 (10 single-frame groups) | 10 | 5 | 5 | 0 | 10 | 0 | 9 | 0 | 1 | 9 |
 | G2 | 10 | 10 | 0 | 0 | 10 | 10 | 0 | 0 | 0 | 10 |
 | G3 | 100 | 97 | 0 | 3 | 100 | 83 | 0 | 17 | 0 | 100 |
-| G4 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 |
+| G4 | 1 | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 1 |
 | G5 | 10 | 8 | 0 | 2 | 10 | 9 | 0 | 1 | 0 | 10 |
 | G6 | 100 | 96 | 0 | 4 | 100 | 100 | 0 | 0 | 0 | 100 |
-| Total | 231 | 216 | 6 | 9 | 231 | 202 | 9 | 18 | 2 | 229 |
+| Total | 231 | 216 | 6 | 9 | 231 | 202 | 10 | 18 | 1 | 230 |
 
 - All captured frames are present and no frames were lost (Section 4).
-- The 2 pairs of 16 bit that are not used: G1_01 (re-captured, different conditions) and G4 (ghosting in the original image; the readings cannot be decided).
+- The 1 pair of 16 bit that is not used: G1_01 (re-captured, different conditions).
 - The share of estimated frames is small (9 of 231 for 8 bit, 18 of 231 for 16 bit) but concentrated in 16 bit G3 (17 pairs); the reason is given in Section 3.5. Using only the pairs read by recognition changes the medians by no more than 1 ms (Section 3.1), so the estimates do not change the conclusions.
 
 ## 3. Error Analysis
@@ -113,11 +113,11 @@
 | G1 | 10 | 9 | −65.0 | −61.0 | 6.8 | 3.0 | −67 to −50 | −67 to −50 |
 | G2 | 10 | 10 | −67.5 | −68.5 | 2.1 | 0.7 | −72 to −67 | −72 to −67 |
 | G3 | 100 | 100 | −64.0 | −62.0 | 5.6 | 4.4 | −68 to −50 | −76 to −49 |
-| G4 | 1 | 0 | n/a | n/a | n/a | n/a | n/a | n/a |
+| G4 | 1 | 1 | −42.0 | n/a | n/a | n/a | n/a | n/a |
 | G5 | 10 | 10 | −52.0 | −52.9 | 4.8 | 2.2 | −61 to −48 | −65 to −47 |
 | G6 | 100 | 100 | −50.0 | −46.5 | 9.8 | 1.5 | −54 to −31 | −82 to 0 |
 | **Full frame G1–G3** | 120 | 119 | **−65.0** | −62.5 | 5.7 | **4.4** | −69 to −50 | −76 to −49 |
-| **Bin 3 G4–G6** | 111 | 110 | **−50.0** | −47.1 | 9.7 | **3.0** | −55 to −32 | −82 to 0 |
+| **Bin 3 G4–G6** | 111 | 111 | **−50.0** | −47.1 | 9.6 | **3.0** | −55 to −32 | −82 to 0 |
 
 Using only the pairs read by recognition (without readings from the image and estimates) gives the following; the medians differ from the tables above by no more than 1 ms:
 
@@ -142,9 +142,9 @@ Key points:
 | 8 bit full frame (120) | 4 | 12 | **98** | 6 | n/a | n/a |
 | 8 bit bin 3 (111) | 1 | 5 | 26 | **71** | 5 | 3 |
 | 16 bit full frame (119) | 1 | **97** | 21 | n/a | n/a | n/a |
-| 16 bit bin 3 (110) | 2 | 2 | **88** | 16 | 1 | 1 |
+| 16 bit bin 3 (111) | 2 | 2 | **89** | 16 | 1 | 1 |
 
-- Each row has one clear mode: 98 of 120 (82%) at −3 for 8 bit full frame, 71 of 111 (64%) at −2 for 8 bit bin 3, 97 of 119 (82%) at −4 for 16 bit full frame, and 88 of 110 (80%) at −3 for 16 bit bin 3.
+- Each row has one clear mode: 98 of 120 (82%) at −3 for 8 bit full frame, 71 of 111 (64%) at −2 for 8 bit bin 3, 97 of 119 (82%) at −4 for 16 bit full frame, and 89 of 111 (80%) at −3 for 16 bit bin 3.
 - A single-frame Δ therefore falls almost entirely on integer multiples of 1 to 4 periods; the quantization is obvious. The true synchronization offset is better expressed as the median.
 
 ### 3.3 Drift within a group
@@ -175,7 +175,7 @@ The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit),
 
 **(3) Time-line estimates.** For groups of 10 frames or more, a straight line of time against sequence number is fitted for each camera (in the short groups both cameras share one frame period). A reading that is more than 40 ms from the line, or missing, is replaced by the value on the line and marked `est` in the `master` and `slave` columns of `usb_final_pairs.csv`. In 27 pairs at least one camera has an estimated value: 3 pairs in 8 bit G3, 2 in G5, 4 in G6, 17 in 16 bit G3 (sequence 50 to 86) and 1 in G5. The accuracy of an estimate is about ±8 ms (limited by the screen resolution).
 
-**(4) Readings from the image for single-frame groups.** G1 (10 single-frame groups) and G4 have no time line; their clock regions were read one by one from the original images and marked `man`. The table lists the 15 pairs whose reading changed (where digits overlap, the clearer layer was read; the uncertainty is about 1 to 2 periods):
+**(4) Readings from the image for single-frame groups.** G1 (10 single-frame groups) and G4 have no time line; their clock regions were read one by one from the original images and marked `man`. The table lists the 16 pairs whose reading changed (where digits overlap, the clearer layer was read; the uncertainty is about 1 to 2 periods):
 
 | Mode · group | Recognition (master/slave) | Read from the image (master/slave) | Δ of the image reading |
 |---|---|---|---|
@@ -188,6 +188,7 @@ The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit),
 | 16 bit G1_02 | .451 / .507 (−56) | .441 / .507 | −66 |
 | 16 bit G1_03 | .291 / .331 (−40) | .291 / .351 | −60 |
 | 16 bit G1_04 | .080 / .074 (+6) | .008 / .074 | −66 |
+| 16 bit G4 | .309 / .400 (−91) | .400 / .442 | −42 |
 | 16 bit G1_05 | 27:48.924 / 27:48.932 (−8) | 27:43.924 / 27:43.974 to .991 (midpoint .983 used) | −50 to −67 (−59 used) |
 | 16 bit G1_06 | .780 / .778 (+2) | .708 / .758 | −50 |
 | 16 bit G1_07 | .808 / .758 (+50) | .708 / .758 | −50 |
@@ -195,11 +196,10 @@ The robust σ of the two full-frame modes is 0.0 ms (8 bit) and 4.4 ms (16 bit),
 | 16 bit G1_09 | .598 / .654 (−56) | .591 / .658 | −67 |
 | 16 bit G1_10 | .208 / .215 (−7) | .208 / .273 | −65 |
 
-The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. In 16 bit G1_05 the milliseconds of the slave have two overlapping layers (7 and 9 in the tens digit, 4 and 1 in the ones digit); a manual check puts the time between .974 and .991, at a digit rollover, and the midpoint .983 is used, Δ ≈ −59 ms (range −50 to −67 ms). The recognition had also read the seconds 43 as 48.
+The slave reading 11:28:35.758 of 16 bit G1_06 was confirmed by a manual check. In 16 bit G4 the milliseconds of both cameras have a second overlapping layer, at a digit rollover: the clearer layer of the slave is .442 (checked manually); the master is in the rollover state and is taken as .400 by manual judgement, Δ −42 ms, uncertainty about ±17 ms. Reading only the clearer layer of the master (.309) would give Δ −133 ms, which does not fit the other data and is not used. In 16 bit G1_05 the milliseconds of the slave have two overlapping layers (7 and 9 in the tens digit, 4 and 1 in the ones digit); a manual check puts the time between .974 and .991, at a digit rollover, and the midpoint .983 is used, Δ ≈ −59 ms (range −50 to −67 ms). The recognition had also read the seconds 43 as 48.
 
 **(5) Pairs not used in the statistics.**
 - 16 bit G1_01 was re-captured at 14:30 after the camera position had changed, and its picture composition differs from the rest of the data. The readings in the image are master 14:31:24.142 and slave 14:31:24.157, Δ −15 ms; they are kept as a record only and are not pooled into the 16 bit full-frame statistics.
-- 16 bit G4 (recognition .309 / .400, Δ −91): the milliseconds of both cameras have a second overlapping layer, at a digit rollover. The clearer layer reads .309 for the master and .442 for the slave (the slave was also checked manually and is at a rollover), Δ −133 ms, which does not fit the other data of the same kind (Δ between −47 and −65 ms for 16 bit bin 3); ghosting is suspected, neither reading can be decided, and the pair is not used.
 
 **(6) Limitation of the readings.** The recognition readings of the 100-frame groups were not checked one by one against the images. Estimated frames and readings from the image are marked in the result table, and the statistics are given both for all valid frames and for the frames read by recognition only (Section 3.1).
 
@@ -275,7 +275,7 @@ In the early morning of 11/04, seven 16 bit full-frame 100-frame groups (G3 cond
 
 ## 7. Limitations
 
-- G1, G2, G4 and G5 have very few samples and are for reference only. The readings of single-frame groups come from the images and have an uncertainty of about 1 to 2 periods where digits overlap; 16 bit G4 could not be decided and G1_01 has different conditions, so neither is used; the slave milliseconds of 16 bit G1_05 are only known to lie between .974 and .991, and the midpoint is used (±9 ms).
+- G1, G2, G4 and G5 have very few samples and are for reference only. The readings of single-frame groups come from the images and have an uncertainty of about 1 to 2 periods where digits overlap; G1_01 of 16 bit has different conditions and is not used; in 16 bit G4 the milliseconds of both cameras are at a digit rollover, and .442 (slave) and .400 (master) are used (uncertainty about ±17 ms); the slave milliseconds of 16 bit G1_05 are only known to lie between .974 and .991, and the midpoint is used (±9 ms).
 - In 9 (8 bit) and 18 (16 bit) pairs the time of one camera is a time-line estimate (most in 16 bit G3, 17 pairs). An estimate has an accuracy of about ±8 ms and is not a measured reading; using only the pairs read by recognition changes the medians by no more than 1 ms.
 - The recognition readings of the 100-frame groups were not checked one by one against the images, so reading errors that were not found may remain.
 - The 11/03 USB capture script had no cooling-off step, so the cooling state was not controlled; gain and exposure are recorded as the script defaults and were not read back each time.

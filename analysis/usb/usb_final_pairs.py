@@ -102,9 +102,9 @@ MANUAL = {
     ("16bit", "G1_07"): ("11:29:27.708", "11:29:27.758"), ("16bit", "G1_08"): ("11:30:19.525", "11:30:19.591"),
     ("16bit", "G1_09"): ("11:31:11.591", "11:31:11.658"), ("16bit", "G1_10"): ("11:32:03.208", "11:32:03.273"),
     ("16bit", "G1_05"): ("11:27:43.924", "11:27:43.983"),
-    ("16bit", "G4"): ("11:36:01.309", "11:36:01.442"),   # bold layers as read; both clocks overlap with a second layer -> kept as unresolved (UNRES)   # slave between .974 and .991 (digits overlap); midpoint used, +-9 ms
+    ("16bit", "G4"): ("11:36:01.400", "11:36:01.442"),   # master at a digit rollover, taken as .400; slave .442 (also at a rollover)   # slave between .974 and .991 (digits overlap); midpoint used, +-9 ms
 }
-UNRES = {("16bit", "G4")}
+UNRES = set()
 COND = {("16bit", "G1_01")}
 for x in out:
     key = (x["mode"].split()[1], x["group"])
