@@ -32,7 +32,7 @@ Summary / 摘要:
 
 ## Test data / 测试数据
 
-The saved images are JPEG previews used only to read the on-screen clock. They are not stored in the repository; the PCIe data set is published as a GitHub Release (link to be added). / 保存的图像是仅用于识别屏幕时钟的 JPEG 预览图，不放在仓库里，PCIe 数据以 GitHub Release 发布（链接待补充）。
+The saved images are JPEG previews used only to read the on-screen clock. They are not stored in the repository; the PCIe data set is published as a GitHub Release: [pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103). / 保存的图像是仅用于识别屏幕时钟的 JPEG 预览图，不放在仓库里，PCIe 数据以 GitHub Release 发布：[pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103)。
 
 The CSV in `results/` is enough to check the statistics in the reports. / `results/` 里的 CSV 足以核对报告中的统计结果。
 
