@@ -43,17 +43,20 @@
 2. 解压 `QHY600_FPGA_26-09-24_sub2-0x12.zip`。
 3. 用 USB 连接一台相机，启动 `QHY_UPDATE_TOOL.exe`。
 4. 在侧边栏打开 **主控FPGA升级** 页面。
-5. 点 **扫描**，选中相机，点 **Read Version**，记下升级前的版本。
+5. 点 **扫描**，等出现 “SCAN DONE” 提示，在设备列表里选中相机（随后会弹出 “connect success”）。点 **Read Version**，记下升级前的版本。日志里的 `Transmission board version : 128-18-54` 表示 subversion1 = 128（0x80，user 镜像）、subversion2 = 18（0x12）；第三个数字本说明不使用。
 6. 点 **UPGRADE USER**。
 7. 工具会依次要求选两个文件：
    - 先选 map 文件：`remoteupdate_user_rpd.map`（用来取得用户镜像的结束地址）；
    - 再选镜像文件：`remoteupdate_user_rpd_auto.rpd`。
-8. 等待擦除和写入完成，进度显示在日志窗口里。升级成功时日志末尾会出现类似下面的行：
+8. 等待擦除和写入完成，进度显示在日志窗口和进度条里；擦除 85 个扇区约 1 分钟，写入约 22 分钟。升级成功时日志末尾会出现类似下面的行：
    ```
    Upgrade Done
-   Verify summary: ... mismatches=0
+   Upgrade time: 00:23:10
+   Now we try to run the new firmware
+   Transmission board data : 26-9-24
    The camera was boot on the user firmware image mode
    ```
+   写完后工具会再读一次版本，最后一个数字可能显示 0（例如 `128-18-0`），给相机断电上电之后才会稳定，这是正常现象。
 9. **给相机断电再上电。**
 10. 重新启动工具，扫描后点 **Read Version**。刚上电时寄存器可能返回 0 或旧值，几秒后再读一次。期望结果是第 1 节里的版本。
 11. 另一台相机重复以上步骤，两台依次升级。
@@ -83,3 +86,16 @@
 - `.rpd` 和 `.map` 是一对，不要混用不同版本的文件。
 - 工具里还有其他页面（USB 固件升级、SD 卡升级、DLL 维护），本次升级用不到。
 - 工具包里的 `qhyccd.dll`、`tbb.dll`、`winusb.dll` 来自该工具自己的编译目录。
+
+## 8. 本 Release 的验证
+
+2026-11-04 至 11-05，用本 Release 的文件和工具，通过 USB 升级了两台 QHY600M Pro ERIS 相机（主机 ac14、从机 8765）：
+
+| 步骤 | 结果 |
+|---|---|
+| 升级前 | 两台：26-9-24，subversion1 0x80，subversion2 0x12，板型 2；工具日志 `128-18-54` |
+| 第 1 台和第 2 台升级（依次进行） | 均为 `Upgrade Done`，分别用 23 分 10 秒和 23 分 06 秒 |
+| 断电上电后 | 两台：26-9-24、0x80、0x12、板型 2，用户镜像模式启动 |
+| USB 主从同步出图（16bit，全幅和 bin 3×3，各 10 帧） | 升级前、第 1 台升级后、第 2 台升级后：主从各 10/10 帧，序号 2~11 齐全，无丢帧 |
+
+写入的镜像与相机原来运行的版本相同（0x12），所以版本号不会变化；测试说明本 Release 的文件和工具能写入可用的镜像，升级后出图和同步功能正常。PCIe 方式不在本次测试范围内。

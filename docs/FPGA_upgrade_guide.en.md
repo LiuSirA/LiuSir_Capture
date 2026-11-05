@@ -43,17 +43,20 @@ The following comes from the debug records of the multi-camera synchronization w
 2. Unzip `QHY600_FPGA_26-09-24_sub2-0x12.zip`.
 3. Connect one camera by USB and start `QHY_UPDATE_TOOL.exe`.
 4. Open the page **Main FPGA upgrade (主控FPGA升级)** in the sidebar.
-5. Click **Scan (扫描)** and select the camera. Click **Read Version** and note the version shown before the upgrade.
+5. Click **Scan (扫描)**, wait for the "SCAN DONE" message, and select the camera in the device list (a "connect success" message follows). Click **Read Version** and note the version shown before the upgrade. The log line `Transmission board version : 128-18-54` means subversion1 = 128 (0x80, user image) and subversion2 = 18 (0x12); the third number is not used in this guide.
 6. Click **UPGRADE USER**.
 7. The tool asks for two files, one after the other:
    - first the map file: select `remoteupdate_user_rpd.map` (it gives the end address of the user image);
    - then the image: select `remoteupdate_user_rpd_auto.rpd`.
-8. Wait until the erase and the write finish. The log window shows the progress. A successful upgrade ends with lines like:
+8. Wait until the erase and the write finish. The log window and the progress bar show the progress; the erase of 85 sectors takes about 1 minute and the write about 22 minutes. A successful upgrade ends with lines like:
    ```
    Upgrade Done
-   Verify summary: ... mismatches=0
+   Upgrade time: 00:23:10
+   Now we try to run the new firmware
+   Transmission board data : 26-9-24
    The camera was boot on the user firmware image mode
    ```
+   Right after the write the tool reads the version again; the last number may show 0 (for example `128-18-0`) until the camera has been power-cycled. This is expected.
 9. **Power-cycle the camera** (switch the power off, then on).
 10. Start the tool again, scan and click **Read Version**. Right after power-up the registers can return 0 or old values; read again after a few seconds. The expected result is the version of section 1.
 11. Repeat for the other camera. Upgrade the cameras one after the other.
@@ -83,3 +86,16 @@ Use this method if you have a USB-Blaster and Quartus Prime Pro 18.1 (Quartus Pr
 - The `.rpd` and `.map` files belong together; do not mix files of different builds.
 - The tool contains other pages (USB firmware upgrade, SD card upgrade, DLL maintenance). They are not needed for this upgrade.
 - The tool package contains `qhyccd.dll`, `tbb.dll` and `winusb.dll` from the tool's own build folder.
+
+## 8. Verification of this release
+
+The files of this release were used to upgrade two QHY600M Pro ERIS cameras (master ac14, slave 8765) over USB with the tool of this release, on 2026-11-04 and 2026-11-05:
+
+| Step | Result |
+|---|---|
+| Before the upgrade | Both cameras: 26-9-24, subversion1 0x80, subversion2 0x12, board type 2; tool log `128-18-54` |
+| Upgrade of camera 1 and of camera 2 (one after the other) | `Upgrade Done`, 23 min 10 s and 23 min 06 s |
+| After a power cycle | Both cameras: 26-9-24, 0x80, 0x12, board type 2, boot in user image mode |
+| USB master/slave synchronized capture (16 bit, full frame and bin 3×3, 10 frames each) | Before the upgrade, after camera 1 and after camera 2: master and slave each 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
+
+The image written is the same version as the one the cameras were already running (0x12), so the version numbers do not change; the test shows that the files and the tool write a working image and that capture and synchronization still work afterwards. The PCIe path was not part of this test.
