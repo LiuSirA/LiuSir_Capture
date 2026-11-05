@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "kind": "liulsir_capture_params",
+  "saved_at": "2026-11-02T16:19:29+08:00",
+  "capture": {
+    "readmode": "0: PhotoGraphic DSO 16BIT",
+    "bits": "16",
+    "exposure_us": "20000",
+    "gain": "80",
+    "offset": "30",
+    "usb_traffic": "50",
+    "speed": "",
+    "bin": "1x1",
+    "roi_x": "0",
+    "roi_y": "0",
+    "roi_w": "",
+    "roi_h": "",
+    "ddr": "default"
+  },
+  "options": {
+    "auto_push": true,
+    "refresh_before_capture": true,
+    "gps_on": false,
+    "filter_burst_waste": true,
+    "save_enabled": false,
+    "save_interval": "1",
+    "save_dir": "J:\\Mywork\\Project_LH\\git\\LiuSir_Capture\\captures",
+    "save_subdir": "",
+    "live_scope": "all"
+  }
+}

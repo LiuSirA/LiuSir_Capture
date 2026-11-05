@@ -1,0 +1,729 @@
+{
+  "version": 1,
+  "modes": {
+    "主从同步_主机(Master)一键设置": {
+      "description": "【USB】主机侧完整同步配置 + 立刻释放 IDLE(35=1)。【已含补包】本模式第 1~4 步就是 burst 补包 41~44，无需再单独点「Burst补包」。补包点漏会导致两台都不出图（2026-09-22 现场复现过）。【顺序】必须先让采集程序(SharpCap 等)进入 live 出图，再点本模式；反过来点，采集程序的 InitChipRegs 会冲掉 39/58，从机退回跟本地 IDLE 自跑。一般建议用「主机配置(压住IDLE)」+「主机触发开拍(释放IDLE)」两步，时序更清楚。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 41,
+            "value": 0
+          },
+          "comment": "补包 USB patch=32001 byte0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 42,
+            "value": 0
+          },
+          "comment": "补包 USB patch=32001 byte1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 43,
+            "value": 125
+          },
+          "comment": "补包 USB patch=32001 byte2"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 44,
+            "value": 1
+          },
+          "comment": "补包 USB patch=32001 byte3"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 50,
+            "value": 0
+          },
+          "comment": "50=0：burst_start"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 51,
+            "value": 0
+          },
+          "comment": "51=0xFF：burst_end 高字节"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 52,
+            "value": 11
+          },
+          "comment": "52=0xFF：burst_end 低字节（窗口 0..0xFFFF = 连续）。想要 N 帧一组就把 51/52 改成 N+1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 142,
+            "value": 1
+          },
+          "comment": "142=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 56,
+            "value": 1
+          },
+          "comment": "56=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 58,
+            "value": 0
+          },
+          "comment": "58=0：主机不等 GPIO"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 39,
+            "value": 17
+          },
+          "comment": "39=0x11：六针 GPS 模式 + SMA 输出 IDLE"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 57,
+            "value": 1
+          },
+          "comment": "57=1：使能 burst（Titan 0xB9 直写）"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 0
+          },
+          "comment": "35=1：直接释放 IDLE 开拍"
+        }
+      ]
+    },
+    "主从同步_从机(Slave)一键设置": {
+      "description": "【USB】从机侧完整同步配置：等主机 SMA 电平，不跟本地 IDLE。【已含补包】本模式第 1~4 步就是 burst 补包 41~44，无需再单独点「Burst补包」。补包点漏会导致两台都不出图（2026-09-22 现场复现过）。【顺序】必须先让采集程序(SharpCap 等)进入 live 出图，再点本模式；反过来点，采集程序的 InitChipRegs 会冲掉 39/58，从机退回跟本地 IDLE 自跑。切勿把 81 写成 1（拔掉触发线时上拉会让从机自跑，出现假 4+4）。PCIe/光纤请改用「主从同步_从机配置_PCIe光纤」。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 41,
+            "value": 0
+          },
+          "comment": "补包 USB patch=32001 byte0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 42,
+            "value": 0
+          },
+          "comment": "补包 USB patch=32001 byte1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 43,
+            "value": 125
+          },
+          "comment": "补包 USB patch=32001 byte2"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 44,
+            "value": 1
+          },
+          "comment": "补包 USB patch=32001 byte3"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 50,
+            "value": 0
+          },
+          "comment": "50=0：burst_start"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 51,
+            "value": 0
+          },
+          "comment": "51=0xFF：burst_end 高字节"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 52,
+            "value": 11
+          },
+          "comment": "52=0xFF：burst_end 低字节（窗口 0..0xFFFF = 连续）。想要 N 帧一组就把 51/52 改成 N+1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 81,
+            "value": 0
+          },
+          "comment": "81=0：RST 不直接接 GPIO"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 39,
+            "value": 2
+          },
+          "comment": "39=2：等 GPIO 电平"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 142,
+            "value": 1
+          },
+          "comment": "142=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 56,
+            "value": 1
+          },
+          "comment": "56=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 144,
+            "value": 0
+          },
+          "comment": "144=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 145,
+            "value": 0
+          },
+          "comment": "145=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 146,
+            "value": 0
+          },
+          "comment": "146=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 147,
+            "value": 0
+          },
+          "comment": "147=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 148,
+            "value": 10
+          },
+          "comment": "148=10：最小脉宽 10*40ns"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 58,
+            "value": 8
+          },
+          "comment": "58=0x08：TrigMode[3] 硬件触发输入"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 57,
+            "value": 1
+          },
+          "comment": "57=1：使能 burst"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 0
+          },
+          "comment": "35=0：只等主机 SMA 电平"
+        }
+      ]
+    },
+    "主从同步_主机触发开拍(释放IDLE)": {
+      "description": "【只对主机执行】释放主机 IDLE，电缆电平拉高 → 主从同时开始出图。执行时机：必须在 BeginQHYCCDLive（开流）之后再点，因为 57=1 要在 begin_live 之前写好、而 35=1 释放要在开流之后；顺序反了会出 0 帧。从机保持 35=0 等 GPIO，不要对从机执行本模式。FPGA 26-9-21-128-1 上 SMA 经光耦后是 高=出图、低=停。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 0
+          },
+          "comment": "35=1：释放 IDLE 开始曝光；主机 SMA 输出直流高电平，从机 RST 跟随该电平一起出图"
+        },
+        {
+          "cmd": "GEN_WRITE_SPLIT",
+          "gen": {
+            "target": "WRITE_FPGA",
+            "base_index": 35,
+            "value": 1,
+            "length": "auto",
+            "endian": "LE",
+            "stride": 1
+          },
+          "comment": "release DEL"
+        }
+      ]
+    },
+    "主从同步_退出同步拍摄(恢复单机默认)": {
+      "description": "退出主从同步 burst，恢复单机正常出图。主机/从机都执行一次。对照 registerInterface.v：FPGA 上电默认 reg39<=5、reg81<=0；公开 SDK InitChipRegs/SetGPSOn 只把 39 写回 1(GPS on)/5(GPS off)，不会清 81/58/35/57/41-44/50-52，所以这些必须手动写回。实测 2026-09-22（冷启动后 10x4+4、12+12 持续同步；见 debug/usb_retest2_20260922_*.json）。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 57,
+            "value": 0
+          },
+          "comment": "57=0：关闭 burst window"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 81,
+            "value": 0
+          },
+          "comment": "81=0：恢复上电默认，RST 不再绑定 GPIO"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 58,
+            "value": 0
+          },
+          "comment": "58=0：关闭 GPIO 触发等待(TrigMode[3])"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 1
+          },
+          "comment": "35=1：释放 IDLE，恢复正常自由出图"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 39,
+            "value": 1
+          },
+          "comment": "39=1：恢复标准六针 GPS 模式（等价 SetGPSOn(1)）；不需要 GPS 可改 39=5 回全输入默认态"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 41,
+            "value": 0
+          },
+          "comment": "41=0：【新增】清补包，避免 PCIe 的 1966080 残留到下次 USB"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 42,
+            "value": 0
+          },
+          "comment": "42=0：清补包"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 43,
+            "value": 0
+          },
+          "comment": "43=0：清补包"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 44,
+            "value": 0
+          },
+          "comment": "44=0：清补包"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 50,
+            "value": 0
+          },
+          "comment": "50=0：【新增】burst 窗口回上电默认"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 51,
+            "value": 0
+          },
+          "comment": "51=0：burst 窗口回上电默认"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 52,
+            "value": 0
+          },
+          "comment": "52=0：burst 窗口回上电默认"
+        }
+      ]
+    },
+    "Burst补包_USB (patch 32001)": {
+      "description": "USB 连接时的 burst 补包数 32001。等价于 SetQHYCCDBurstModePatchNumber(32001)：SDK qhy600base.cpp 里是 WriteTitanFPGA(41,MSB3) (42,MSB2) (43,MSB1) (44,MSB0)，即 4 字节大端写 41~44，本模式用 GEN_WRITE_SPLIT BE 复现，展开结果为 41=0x00 42=0x00 43=0x7D 44=0x01。EnableBurstMode 不会自动设补包，必须单独写；设错会乱帧或从机不等待。",
+      "steps": [
+        {
+          "cmd": "GEN_WRITE_SPLIT",
+          "gen": {
+            "target": "WRITE_FPGA",
+            "base_index": 41,
+            "value": 32001,
+            "length": 4,
+            "endian": "BE",
+            "stride": 1
+          },
+          "comment": "patch=32001 (0x00007D01) 大端写入 FPGA 41~44"
+        }
+      ]
+    },
+    "Burst补包_PCIe光纤 (patch 8192)": {
+      "description": "【2026-09-25 修订：本条说明此前混入了多条已被实验推翻的结论，且前后自相矛盾，现整体重写】\n\n取值 8192 的依据（实测，交付值）：\n  单相机连续取图 150 帧只丢 1 帧；双机同步 10 帧/轮连跑 20 轮全部 matched；\n  会话级稳定，未见已知问题。\n\n机制（已验证）：补包会被下一个 isFrameHead 清掉 single_patch_flag，\n所以实际补出去的量 = min(设定值, 两帧间隙容量)。间隙容量实测 26,988~26,989 字，\n且在 bin1/bin2 × 8/16bit × 曝光 1/5/20ms 下均为此值，不随拍摄参数变化。\n8192 远低于该容量，因此每帧都能补完，不会被截断。\n\n补包被截断时会发生什么（已定位，尚未完全修复）：\n  1) 每帧写入 to_64_128 的 64 位字数会在 N/N+1 之间跳（FPGA 计数器实测 delta=1 字；\n     补得满时 delta=0）。\n  2) 帧头在字节流中偏移 8 字节（实测 lastoff=8），而 SDK 搜帧头签名按 16 字节跨步，\n     正好迈过签名 -> 整帧丢弃。已在 SDK 侧修复（扫描步进改 8），\n     大补包单相机由 6~8/30 提升到 23~25/30。\n  3) PCIe 卡攒不出完整的包：同样 30 帧窗口，不截断时攒出 31 个包、收到 29 帧；\n     截断时只攒出 26 个包、收到 24 帧。此项未修复。\n\n重要对照：USB 模式用的补包是 32001，同样超过间隙容量、同样每帧被截断，\n但 USB 工作完全正常。说明截断本身无害，问题出在光纤通路\n（64->128 打包器 + PCIe 卡攒包）对截断的处理上。USB 是 64 位直通，没有该打包器。\n\n另一条关键对照：补包 1,966,080（比本值大 240 倍）在长曝光下能补满时，\n单相机 29/30 完全正常。所以『补包体积大』不是问题，『大到补不完』才是。\n\n已撤回的旧结论（勿再引用）：\n  ×『PCIe 补包必须用 0』—— 0 反而少 1 帧（0->8 帧、8192->9 帧）。\n  ×『补包 1966080 导致帧率降到 1/5 是因为补包体积大』—— 实为帧被丢弃后主机空等；\n     补满时同样体积毫无问题。\n  ×『截断破坏帧头帧尾标记』—— FPGA 计数器实测标记 80/80 全部正常写入、0 个被 aclr 破坏。\n  ×『卡的 DMA 包大小未计入补包导致残余累积』—— 干预实验（把补包计入包大小）无任何效果。\n\n写法：4 字节大端写 FPGA 寄存器 41~44，等价 SetQHYCCDBurstModePatchNumber(8192)，\n展开为 41=0x00 42=0x00 43=0x20 44=0x00。EnableBurstMode 不会自动设补包，必须单独写。",
+      "steps": [
+        {
+          "cmd": "GEN_WRITE_SPLIT",
+          "gen": {
+            "target": "WRITE_FPGA",
+            "base_index": 41,
+            "value": 8192,
+            "length": 4,
+            "endian": "BE",
+            "stride": 1
+          },
+          "comment": "patch=8192 (0x00002000) 大端写入 FPGA 41~44，展开 41=0x00 42=0x00 43=0x20 44=0x00"
+        }
+      ]
+    },
+    "主从同步_主机配置_PCIe光纤(压住IDLE)": {
+      "description": "【2026-09-24 定值 8192，实测依据】PCIe 补包不能用 1966080，也不宜用 0。机制：single_patch_flag 会被下一个 isFrameHead 强行清零，所以实际补出去的量 = min(设置值, 帧间空白容量)。实测帧间空白容量 = 26,989 字 —— 设 27136 与设 1966080 实际补出去的都是 26,989 字（完全相同），且补包块在半途被帧头切断、to_64_128 同时被 aclr 清空，帧边界被破坏，主机实收从 9 帧掉到 2 帧。分界不是补包大小，而是**补包能否在下一帧头之前走完**：≤26,624 走得完→9帧；≥27,136 走不完→2帧，中间无过渡。补包也不能设 0：实测 0→8帧、8192→9帧、26624→9帧，小补包比不补包多 1 帧，说明补包确实在把管道最后一段顶出去。（帧内容完整性已验证：补包0时整帧字节齐全、末1KB零字节占比0.0%，PCIe 上不补包不会丢帧尾。）取 8192 的理由：实收 9/10，只占空白容量的 30%，余量充足。上限与 binning 无关——FPGA 侧始终按满分辨率读出，bin1/bin2 实测读数逐字节相同。\n\n【2026-09-24 实测修正】PCIe 补包必须用 **0**，不能用 1966080。同一次会话三段对照(bin2/traffic0)：未进 burst 4.08fps=62.9MB/s；burst使能+连续窗口 0.72fps=11.1MB/s(慢5.7倍)；退出burst 4.27fps=65.8MB/s。换补包重测 burst 段：1966080→1.20fps，32001→0.72fps，**0→4.43fps=68.3MB/s(与不进burst相同)**。原因：1966080 比一整帧(约1,926,600字)还大，且 RTL 里 speed_cut_flag 让补包以半速跑，每帧后面拖一整帧填充还慢一倍。补包改0后，正常曝光20ms下有限窗口10帧由2帧提升到8帧(连续三次一致)；窗口6/10/12/20→实收4/8/10/18，**稳定差2**，用时把窗口设成「想要帧数+2」。双机同步10轮4+4全部 matched=True，对已验收流程无副作用。\n\n【PCIe/光纤】补包用 0。注意：实测的 PCIe 路径除本模式的寄存器外，还需要调用 SDK 的 PCIEClearDDR()（没有寄存器等价物，一键覆盖不了）以及 reg63 脉冲(1→0)，reg63 已含在本模式末尾。本 PCIe 变体由 debug/usb_dual_burst.py 的 PCIe 分支转写，尚未用一键方式实机验证过。【顺序】必须先让采集程序(SharpCap 等)进入 live 出图，再点本模式；反过来点，采集程序的 InitChipRegs 会冲掉 39/58，从机退回跟本地 IDLE 自跑。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 41,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 42,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 43,
+            "value": 32
+          },
+          "comment": "补包 PCIe patch=0 byte2"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 44,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte3"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 50,
+            "value": 0
+          },
+          "comment": "50=0：burst_start"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 51,
+            "value": 0
+          },
+          "comment": "51=0xFF：burst_end 高字节"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 52,
+            "value": 11
+          },
+          "comment": "52=0xFF：burst_end 低字节（窗口 0..0xFFFF = 连续）。想要 N 帧一组就把 51/52 改成 N+1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 142,
+            "value": 1
+          },
+          "comment": "142=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 56,
+            "value": 1
+          },
+          "comment": "56=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 58,
+            "value": 0
+          },
+          "comment": "58=0：主机不等 GPIO"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 39,
+            "value": 17
+          },
+          "comment": "39=0x11：六针 GPS 模式 + SMA 输出 IDLE"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 57,
+            "value": 1
+          },
+          "comment": "57=1：使能 burst（Titan 0xB9 直写）"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 0
+          },
+          "comment": "35=0：压住 IDLE，等「主机触发开拍」放行"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 63,
+            "value": 1
+          },
+          "comment": "reg63=1：PCIe DDR 复位脉冲"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 63,
+            "value": 0
+          },
+          "comment": "reg63=0：脉冲结束"
+        }
+      ]
+    },
+    "主从同步_从机配置_PCIe光纤": {
+      "description": "【2026-09-24 定值 8192，实测依据】PCIe 补包不能用 1966080，也不宜用 0。机制：single_patch_flag 会被下一个 isFrameHead 强行清零，所以实际补出去的量 = min(设置值, 帧间空白容量)。实测帧间空白容量 = 26,989 字 —— 设 27136 与设 1966080 实际补出去的都是 26,989 字（完全相同），且补包块在半途被帧头切断、to_64_128 同时被 aclr 清空，帧边界被破坏，主机实收从 9 帧掉到 2 帧。分界不是补包大小，而是**补包能否在下一帧头之前走完**：≤26,624 走得完→9帧；≥27,136 走不完→2帧，中间无过渡。补包也不能设 0：实测 0→8帧、8192→9帧、26624→9帧，小补包比不补包多 1 帧，说明补包确实在把管道最后一段顶出去。（帧内容完整性已验证：补包0时整帧字节齐全、末1KB零字节占比0.0%，PCIe 上不补包不会丢帧尾。）取 8192 的理由：实收 9/10，只占空白容量的 30%，余量充足。上限与 binning 无关——FPGA 侧始终按满分辨率读出，bin1/bin2 实测读数逐字节相同。\n\n【2026-09-24 实测修正】PCIe 补包必须用 **0**，不能用 1966080。同一次会话三段对照(bin2/traffic0)：未进 burst 4.08fps=62.9MB/s；burst使能+连续窗口 0.72fps=11.1MB/s(慢5.7倍)；退出burst 4.27fps=65.8MB/s。换补包重测 burst 段：1966080→1.20fps，32001→0.72fps，**0→4.43fps=68.3MB/s(与不进burst相同)**。原因：1966080 比一整帧(约1,926,600字)还大，且 RTL 里 speed_cut_flag 让补包以半速跑，每帧后面拖一整帧填充还慢一倍。补包改0后，正常曝光20ms下有限窗口10帧由2帧提升到8帧(连续三次一致)；窗口6/10/12/20→实收4/8/10/18，**稳定差2**，用时把窗口设成「想要帧数+2」。双机同步10轮4+4全部 matched=True，对已验收流程无副作用。\n\n【PCIe/光纤】补包用 0。注意：实测的 PCIe 路径除本模式的寄存器外，还需要调用 SDK 的 PCIEClearDDR()（没有寄存器等价物，一键覆盖不了）以及 reg63 脉冲(1→0)，reg63 已含在本模式末尾。本 PCIe 变体由 debug/usb_dual_burst.py 的 PCIe 分支转写，尚未用一键方式实机验证过。【顺序】必须先让采集程序(SharpCap 等)进入 live 出图，再点本模式；反过来点，采集程序的 InitChipRegs 会冲掉 39/58，从机退回跟本地 IDLE 自跑。",
+      "steps": [
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 41,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 42,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 43,
+            "value": 32
+          },
+          "comment": "补包 PCIe patch=0 byte2"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 44,
+            "value": 0
+          },
+          "comment": "补包 PCIe patch=0 byte3"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 50,
+            "value": 0
+          },
+          "comment": "50=0：burst_start"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 51,
+            "value": 0
+          },
+          "comment": "51=0xFF：burst_end 高字节"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 52,
+            "value": 11
+          },
+          "comment": "52=0xFF：burst_end 低字节（窗口 0..0xFFFF = 连续）。想要 N 帧一组就把 51/52 改成 N+1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 81,
+            "value": 0
+          },
+          "comment": "81=0：RST 不直接接 GPIO"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 39,
+            "value": 2
+          },
+          "comment": "39=2：等 GPIO 电平"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 142,
+            "value": 1
+          },
+          "comment": "142=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 56,
+            "value": 1
+          },
+          "comment": "56=1"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 144,
+            "value": 0
+          },
+          "comment": "144=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 145,
+            "value": 0
+          },
+          "comment": "145=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 146,
+            "value": 0
+          },
+          "comment": "146=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 147,
+            "value": 0
+          },
+          "comment": "147=0"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 148,
+            "value": 10
+          },
+          "comment": "148=10：最小脉宽 10*40ns"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 58,
+            "value": 8
+          },
+          "comment": "58=0x08：TrigMode[3] 硬件触发输入"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 57,
+            "value": 1
+          },
+          "comment": "57=1：使能 burst"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 35,
+            "value": 0
+          },
+          "comment": "35=0：只等主机 SMA 电平"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 63,
+            "value": 1
+          },
+          "comment": "reg63=1：PCIe DDR 复位脉冲"
+        },
+        {
+          "cmd": "WRITE_FPGA",
+          "params": {
+            "index": 63,
+            "value": 0
+          },
+          "comment": "reg63=0：脉冲结束"
+        }
+      ]
+    }
+  }
+}

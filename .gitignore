@@ -1,0 +1,15 @@
+# local capture data and archives (not for git; PCIe data is published as a GitHub Release)
+captures/
+_archive_pre_sync_acc_20261102/
+sync_acc_runs/
+anomaly_review*/
+# SDK binaries and logs
+remoteupdate_deps/
+*.dll
+qhyccdlog/
+# backups, caches
+*.bak*
+__pycache__/
+*.pyc
+# local helper that controls a smart plug (contains a device id)
+sync_acc_mijia_power.py
