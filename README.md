@@ -43,7 +43,7 @@ FPGA user image (QHY600M Pro ERIS, 26-09-24, sub2 0x12) and the upgrade tool: [q
 
 The saved images are JPEG previews used only to read the on-screen clock. They are not stored in the repository; the PCIe data set is published as a GitHub Release: [pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103). / 保存的图像是仅用于识别屏幕时钟的 JPEG 预览图，不放在仓库里，PCIe 数据以 GitHub Release 发布：[pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103)。
 
-The USB data sets (formal 8 bit / 16 bit groups and the 11/04 repeat tests) are published as GitHub Releases (links to be added). / USB 数据（11/03 的 8bit/16bit 正式组和 11/04 的重复测试）以 GitHub Release 发布（链接待补充）。
+The USB data sets are published as GitHub Releases: formal 8 bit / 16 bit groups [usb-formal-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/usb-formal-data-20261103), 11/04 repeat tests [usb-repeat-tests-20261104](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/usb-repeat-tests-20261104). / USB 数据以 GitHub Release 发布：11/03 的 8bit/16bit 正式组 [usb-formal-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/usb-formal-data-20261103)，11/04 的重复测试 [usb-repeat-tests-20261104](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/usb-repeat-tests-20261104)。
 
 The CSV in `results/` is enough to check the statistics in the reports. / `results/` 里的 CSV 足以核对报告中的统计结果。
 
