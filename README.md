@@ -11,7 +11,12 @@ PCIe (16 bit) synchronization accuracy: error and frame-loss analysis / PCIe（1
 - English: [docs/PCIe_data_analysis_report.en.md](docs/PCIe_data_analysis_report.en.md)
 - 中文：[docs/PCIe_data_analysis_report.zh-CN.md](docs/PCIe_data_analysis_report.zh-CN.md)
 
-Summary / 摘要:
+USB (8 bit and 16 bit) synchronization accuracy and repeat tests / USB（8bit 和 16bit）同步精度与重复测试
+
+- English: [docs/USB_data_analysis_report.en.md](docs/USB_data_analysis_report.en.md)
+- 中文：[docs/USB_data_analysis_report.zh-CN.md](docs/USB_data_analysis_report.zh-CN.md)
+
+PCIe summary / PCIe 摘要:
 
 - Master − slave offset: median about −50 ms in the first period and about +19 ms in the second (the cameras were repositioned in between). / 主−从偏差：前段中位数约 −50 ms，后段约 +19 ms（期间调整过相机位置）。
 - No frame loss in the 15 formal groups (462 frames): sequence numbers continuous, files complete. / 15 个正式组共 462 帧无丢帧：序号连续、文件齐全。
@@ -26,8 +31,8 @@ Summary / 摘要:
 | `sync_acc_run.py` | One synchronized burst capture, saves master/slave frames / 单次同步连拍采集 |
 | `sync_acc_autonomous*.py`, `_launch_*.py` | Group scheduler (G1–G6) for the PCIe and USB tests / 分组（G1–G6）测试调度 |
 | `analysis/ocr/run_pcie_ocr.py` | Clock recognition (OCR) and sequence-constrained repair / 时钟识别与序列修正 |
-| `analysis/pcie/` | Error and frame-loss statistics script, results and figures / 误差与丢帧统计脚本、结果与图 |
-| `results/pcie_pairs.csv` | Master/slave clock readings and Δ per frame pair (PCIe) / 每对主从读数与 Δ |
+| `analysis/pcie/`, `analysis/usb/` | Error and frame-loss statistics scripts, results and figures / 误差与丢帧统计脚本、结果与图 |
+| `results/pcie_pairs.csv`, `results/usb_pairs.csv`, `results/usb_repeat_pairs.csv` | Master/slave clock readings and Δ per frame pair (PCIe, USB, USB repeat tests) / 每对主从读数与 Δ（PCIe、USB、USB 重复测试） |
 | `docs/` | Reports (English and Chinese) / 报告（中英文） |
 
 ## FPGA upgrade / FPGA 升级
@@ -37,6 +42,8 @@ FPGA user image (QHY600M Pro ERIS, 26-09-24, sub2 0x12) and the upgrade tool: [q
 ## Test data / 测试数据
 
 The saved images are JPEG previews used only to read the on-screen clock. They are not stored in the repository; the PCIe data set is published as a GitHub Release: [pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103). / 保存的图像是仅用于识别屏幕时钟的 JPEG 预览图，不放在仓库里，PCIe 数据以 GitHub Release 发布：[pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103)。
+
+The USB data sets (formal 8 bit / 16 bit groups and the 11/04 repeat tests) are published as GitHub Releases (links to be added). / USB 数据（11/03 的 8bit/16bit 正式组和 11/04 的重复测试）以 GitHub Release 发布（链接待补充）。
 
 The CSV in `results/` is enough to check the statistics in the reports. / `results/` 里的 CSV 足以核对报告中的统计结果。
 

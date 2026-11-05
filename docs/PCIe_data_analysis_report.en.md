@@ -32,13 +32,13 @@
 
 - Both cameras look at the same monitor, which shows a millisecond clock page. The two cameras view it from different angles, so the clock sits at a different position in each image.
 - The monitor refreshes at 60 Hz, so the smallest step the clock can show is one refresh period (16.7 ms).
-- The clock shows UTC+8 time. During recognition it is converted using the time stamp of the saved folder and checked against the reading.
+- The on-screen clock shows UTC+8 time. The folder time stamps of the PCIe data are machine local time (UTC−8), so the same moment appears 16 hours later on the screen (for example folder time 11/03 22:14 corresponds to screen time 11/04 14:14); recognition converts accordingly before checking the readings.
 - Δ = clock reading in the master image − clock reading in the slave image. A negative Δ means the master exposed earlier than the slave.
 - Clock readings are obtained by OCR and then repaired using the time line of neighbouring frames (see Sections 3.4 and 3.5).
 
 ### 1.4 Groups and capture conditions
 
-| Group | Resolution | Image size | Frames per group | Repeats | Saved sequence numbers | Completed (local time) |
+| Group | Resolution | Image size | Frames per group | Repeats | Saved sequence numbers | Completed (local time, UTC−8) |
 |---|---|---|---|---|---|---|
 | G1 | Full frame 1×1 | 9600×6422 | 1 | 10 groups (G1_01 to G1_10) | 2 | 11/03 22:14 to 22:31 |
 | G2 | Full frame 1×1 | 9600×6422 | 10 | 1 | 2 to 11 | 11/03 22:33 |
