@@ -30,6 +30,10 @@ Summary / 摘要:
 | `results/pcie_pairs.csv` | Master/slave clock readings and Δ per frame pair (PCIe) / 每对主从读数与 Δ |
 | `docs/` | Reports (English and Chinese) / 报告（中英文） |
 
+## FPGA upgrade / FPGA 升级
+
+FPGA user image (QHY600M Pro ERIS, 26-09-24, sub2 0x12) and the upgrade tool: [qhy600-fpga-0x12-20261012](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/qhy600-fpga-0x12-20261012). Guide / 说明: [English](docs/FPGA_upgrade_guide.en.md), [中文](docs/FPGA_upgrade_guide.zh-CN.md). / QHY600M Pro ERIS 的 FPGA 用户镜像（26-09-24，sub2 0x12）和升级工具。
+
 ## Test data / 测试数据
 
 The saved images are JPEG previews used only to read the on-screen clock. They are not stored in the repository; the PCIe data set is published as a GitHub Release: [pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103). / 保存的图像是仅用于识别屏幕时钟的 JPEG 预览图，不放在仓库里，PCIe 数据以 GitHub Release 发布：[pcie-data-20261103](https://github.com/LiuSirA/LiuSir_Capture/releases/tag/pcie-data-20261103)。
