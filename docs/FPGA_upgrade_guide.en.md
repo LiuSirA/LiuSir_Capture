@@ -1,6 +1,6 @@
 # QHY600M Pro ERIS FPGA Upgrade Guide (sub2 = 0x12)
 
-> **Closed-loop tested:** the firmware upgrade (files and tool of this release) and the capture test demo were tested on two QHY600M Pro ERIS cameras over USB. See section 8.
+> **Closed-loop tested:** the firmware upgrade (files and tool of this release) and the capture test demo were tested on two QHY600M Pro ERIS cameras over USB and PCIe (the upgrade itself over USB). See section 8.
 
 This guide describes the FPGA user image and the upgrade tool published in the GitHub Release `qhy600-fpga-0x12-20261012`.
 
@@ -23,13 +23,20 @@ Version of the image, as read from the cameras that run it:
 
 Built from the project `ERIS_455_NIOS_1`, output package `remoteupgrade_20261012_09_40_49`.
 
-## 2. About this version
+## 2. Tested configuration
 
-The following comes from the debug records of the multi-camera synchronization work and is not a complete change list:
+The image supports master/slave synchronized shooting over USB and over PCIe/fibre (one-way trigger from the master to the slave). The tests in section 8 used these settings:
 
-- The image supports master/slave synchronized shooting over USB and over PCIe/fibre (one-way trigger from the master to the slave).
-- Version 0x0F added write gating and a tail flush in the PCIe transmit path (`PCIE/bypass_to_xgmii.v`). Versions 0x10 to 0x12 are diagnostic builds that try to overlay a frame-counter pattern into the image stream. In the tests the overlay did not appear in the buffer delivered by the SDK, so frame numbers are read from the GPS frame header (`seq_number`) instead.
-- Known limitation: with a finite burst window on PCIe, a few frames at the head of the window may not be delivered (for example 28 of 30 with burst padding 8192). The cause was not fully resolved. See the PCIe report in `docs/` for the data of the synchronization tests.
+| Setting | Value |
+|---|---|
+| Bit depth, gain, exposure | 16 bit, gain 50, exposure 10 ms |
+| Cooling | Off |
+| Capture window | burst-start = 1, burst-end = n+2; valid frames are the sequence numbers 2 to n+1 |
+| Frame numbers | Read from the `seq_number` of the GPS frame header (GPS on) |
+| USB | Transfer traffic 55 for full frame and 30 for bin 3×3 |
+| PCIe/fibre | Camera default traffic; GPS switched on after Live; burst padding 8192 (preset "Burst补包_PCIe光纤 (patch 8192)") |
+
+See the PCIe and USB reports in `docs/` for the data of the synchronization tests.
 
 ## 3. Before you start
 
@@ -100,7 +107,7 @@ The files of this release were used to upgrade two QHY600M Pro ERIS cameras (mas
 | After a power cycle | Both cameras: 26-9-24, 0x80, 0x12, board type 2, boot in user image mode |
 | USB master/slave synchronized capture (16 bit, full frame and bin 3×3, 10 frames each) | Before the upgrade, after camera 1 and after camera 2: master and slave each 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
 
-The image written is the same version as the one the cameras were already running (0x12), so the version numbers do not change; the test shows that the files and the tool write a working image and that capture and synchronization still work afterwards. The PCIe path was not part of this test.
+The image written is the same version as the one the cameras were already running (0x12), so the version numbers do not change; the test shows that the files and the tool write a working image and that capture and synchronization still work afterwards. The firmware upgrade itself is done over USB.
 
 The test demo of the repository was also run on the upgraded cameras, from a fresh clone of the repository (commit 0b9a06e):
 
@@ -108,3 +115,11 @@ The test demo of the repository was also run on the upgraded cameras, from a fre
 |---|---|
 | `sync_acc_run.py`, USB master/slave, 16 bit, full frame and bin 3×3, 10 frames each | Master and slave 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
 | `e2e_test.py` (capture GUI with real cameras: scan, connect, live, sync hold and release, exit and re-enter) | 20 of 22 checks pass; the 2 failing checks compare the GUI default of the burst-start register (1) with the preset file (0), a known difference in defaults |
+
+The same repository clone was also run with the cameras connected over PCIe/fibre after the upgrade:
+
+| Check | Result |
+|---|---|
+| FPGA version read over PCIe | Both cameras: 26-9-24, subversion1 0x80, subversion2 0x12, board type 2 |
+| `sync_acc_run.py`, PCIe master/slave, 16 bit, full frame and bin 3×3, 10 frames each | Master and slave 10 of 10 frames, sequence numbers 2 to 11 complete, no frame lost |
+| `sync_acc_run.py`, PCIe master/slave, 16 bit, full frame, 100 frames | Master and slave 100 of 100 frames, sequence numbers 2 to 101 complete, no frame lost |

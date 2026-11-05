@@ -6,15 +6,16 @@ QHYCCD 同步拍摄演示：双相机（QHY600M）主从同步拍摄的采集 GU
 
 ## Verification status / 验证状态
 
-**The FPGA firmware upgrade and the software test demo have been tested in a closed loop (USB, 2026-11-04/05). / FPGA 固件升级和软件测试 demo 已做闭环测试（USB，2026-11-04/05）。**
+**The FPGA firmware upgrade and the software test demo have been tested in a closed loop (upgrade over USB; capture over USB and PCIe, 2026-11-04/05). / FPGA 固件升级和软件测试 demo 已做闭环测试（升级通过 USB；出图在 USB 和 PCIe 下，2026-11-04/05）。**
 
 | Item / 项目 | Closed-loop test / 闭环测试 | Result / 结果 |
 |---|---|---|
 | FPGA upgrade files (`remoteupdate.jic`, `remoteupdate_user_rpd_auto.rpd`, `.map`) and upgrade tool V260518 / FPGA 升级文件和升级工具 | Two QHY600M Pro ERIS cameras were upgraded over USB with the files and the tool from the Release, one after the other, then power-cycled, version read, and captured again / 两台 QHY600M Pro ERIS 相机用 Release 里的文件和工具通过 USB 依次升级，上电后读版本并再次出图 | `Upgrade Done` on both (about 23 min each); after the power cycle both report 26-9-24, subversion1 0x80, subversion2 0x12, user image mode / 两台均升级完成（各约 23 分钟），上电后版本均为 26-9-24、0x80、0x12，用户镜像模式 |
 | Test demo: capture script `sync_acc_run.py` / 测试 demo：采集脚本 | Run from a fresh clone of this repository on the upgraded cameras, USB master/slave, 16 bit, full frame and bin 3×3, 10 frames each / 用本仓库的全新克隆在升级后的相机上运行，USB 主从，16bit，全幅和 bin 3×3 各 10 帧 | Master and slave 10 of 10 frames each, sequence numbers 2 to 11 complete, no frame lost; the same result before the upgrade / 主从各 10/10 帧，序号 2~11 齐全，无丢帧；升级前结果相同 |
 | Test demo: capture GUI `capture_gui.py` (`e2e_test.py`, real cameras) / 测试 demo：采集 GUI 端到端测试 | Same fresh clone, upgraded cameras, USB: scan, connect, live, sync hold/release, exit and re-enter / 同一全新克隆，升级后的相机，USB：扫描、连接、Live、同步压住/放行、退出再进入 | 20 of 22 checks pass; the 2 failing checks compare the GUI default of the burst-start register (1) with the preset file (0), a known difference in defaults, not a hardware failure / 22 项通过 20 项；2 项失败是 GUI 默认的 burst 起始寄存器值（1）与预设文件（0）不一致，是已知的默认值差异，不是硬件问题 |
+| Test demo: capture script `sync_acc_run.py` over PCIe/fibre / 测试 demo：PCIe 下的采集脚本 | Same fresh clone, upgraded cameras connected over PCIe, master/slave, 16 bit / 同一全新克隆，升级后的相机通过 PCIe 连接，主从，16bit | FPGA version 26-9-24 / 0x80 / 0x12 on both; full frame and bin 3×3 10 of 10 frames, full frame 100 of 100 frames on master and slave, sequence numbers complete, no frame lost / 两台版本均为 26-9-24、0x80、0x12；全幅和 bin 3×3 各 10/10 帧，全幅 100/100 帧，主从序号齐全，无丢帧 |
 
-Not covered / 未覆盖: the upgrade over PCIe/fibre (the remote upgrade works over USB only), capture after the upgrade over PCIe, and the master/slave time offset after the upgrade (not re-measured). / 通过 PCIe/光纤升级（远程升级只能走 USB）、升级后的 PCIe 出图、升级后的主从时间差（未重新测量）。
+Not covered / 未覆盖: the remote upgrade over PCIe/fibre (the upgrade is done over USB), the capture GUI end-to-end test over PCIe, and the master/slave time offset after the upgrade (not re-measured). / 通过 PCIe/光纤的远程升级（升级通过 USB 进行）、PCIe 下的采集 GUI 端到端测试、升级后的主从时间差（未重新测量）。
 
 Details / 详情: [English](docs/FPGA_upgrade_guide.en.md#8-verification-of-this-release), [中文](docs/FPGA_upgrade_guide.zh-CN.md#8-本-release-的验证).
 
